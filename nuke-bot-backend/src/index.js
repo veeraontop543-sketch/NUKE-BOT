@@ -16,6 +16,18 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: Date.now() });
 });
 
+// Root route
+app.get('/', (req, res) => {
+  res.json({ 
+    name: 'Nuke Bot Backend',
+    status: 'running',
+    endpoints: {
+      health: '/health',
+      websocket: 'ws://<host>:<port>'
+    }
+  });
+});
+
 // Store active bot connections
 const botConnections = new Map();
 
