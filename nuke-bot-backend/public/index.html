@@ -8,67 +8,122 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Monospace', monospace; background: #050508; color: #fff; min-height: 100vh; }
     .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-    .header { text-align: center; padding: 30px 0; border-bottom: 1px solid #1a1a2e; margin-bottom: 30px; }
-    .logo { font-size: 32px; font-weight: 800; color: #00ff88; letter-spacing: 2px; }
-    .subtitle { color: #888; margin-top: 8px; font-size: 14px; }
+    .header { text-align: center; padding: 20px 0; border-bottom: 1px solid #1a1a2e; margin-bottom: 20px; }
+    .logo { font-size: 28px; font-weight: 800; color: #00ff88; letter-spacing: 2px; }
+    .subtitle { color: #888; margin-top: 4px; font-size: 12px; }
     
     .page { display: none; }
     .page.active { display: block; animation: fadeIn 0.3s ease; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     
-    .card { background: #0d0d14; border: 1px solid #1a1a2e; border-radius: 16px; padding: 24px; margin-bottom: 20px; }
-    .card-title { color: #00ff88; font-size: 12px; font-weight: 700; letter-spacing: 1px; margin-bottom: 20px; text-transform: uppercase; }
+    .card { background: #0d0d14; border: 1px solid #1a1a2e; border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+    .card-title { color: #00ff88; font-size: 11px; font-weight: 700; letter-spacing: 1px; margin-bottom: 16px; text-transform: uppercase; }
     
-    .input-group { margin-bottom: 16px; }
-    .input-label { display: block; font-size: 10px; font-weight: 600; color: #888; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-    .input { width: 100%; background: #050508; border: 1px solid #1a1a2e; border-radius: 10px; padding: 14px; font-size: 14px; color: #fff; font-family: monospace; }
+    .input-group { margin-bottom: 12px; }
+    .input-label { display: block; font-size: 9px; font-weight: 600; color: #888; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .input { width: 100%; background: #050508; border: 1px solid #1a1a2e; border-radius: 8px; padding: 12px; font-size: 13px; color: #fff; font-family: monospace; }
     .input:focus { outline: none; border-color: #00ff88; }
     
-    .btn { padding: 16px 32px; border-radius: 12px; font-size: 14px; font-weight: 700; font-family: monospace; cursor: pointer; transition: all 0.2s; border: none; }
+    .btn { padding: 12px 24px; border-radius: 8px; font-size: 12px; font-weight: 700; font-family: monospace; cursor: pointer; transition: all 0.2s; border: none; }
     .btn-primary { background: #00ff88; color: #000; }
-    .btn-primary:hover { background: #00e67a; transform: translateY(-2px); box-shadow: 0 4px 20px rgba(0,255,136,0.3); }
+    .btn-primary:hover { background: #00e67a; }
     .btn-danger { background: #ff3333; color: #fff; }
-    .btn-danger:hover { background: #ff1a1a; transform: translateY(-2px); box-shadow: 0 4px 20px rgba(255,51,51,0.3); }
-    .btn-secondary { background: #1a1a2e; color: #ffaa00; border: 1px solid #333; }
-    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .btn-danger:hover { background: #ff1a1a; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
     
-    .btn-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 16px; }
-    .cmd-btn { padding: 20px; border-radius: 12px; background: #0a0a0f; border: 1px solid #1a1a2e; text-align: center; cursor: pointer; transition: all 0.2s; }
-    .cmd-btn:hover { border-color: #00ff88; background: #101018; transform: translateY(-2px); }
-    .cmd-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-    .cmd-icon { font-size: 28px; margin-bottom: 8px; display: block; }
-    .cmd-name { font-size: 14px; font-weight: 700; color: #fff; font-family: monospace; margin-bottom: 4px; }
-    .cmd-desc { font-size: 11px; color: #888; font-family: monospace; }
+    .btn-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 12px; }
+    .cmd-btn { padding: 14px; border-radius: 8px; background: #0a0a0f; border: 1px solid #1a1a2e; text-align: center; cursor: pointer; transition: all 0.2s; }
+    .cmd-btn:hover { border-color: #00ff88; background: #101018; }
+    .cmd-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .cmd-icon { font-size: 20px; margin-bottom: 4px; display: block; }
+    .cmd-name { font-size: 11px; font-weight: 700; color: #fff; font-family: monospace; margin-bottom: 2px; }
+    .cmd-desc { font-size: 9px; color: #888; font-family: monospace; }
     
-    .status-bar { display: flex; align-items: center; gap: 12px; padding: 16px; background: #0d0d14; border-radius: 12px; border: 1px solid #1a1a2e; margin-bottom: 24px; }
-    .status-dot { width: 12px; height: 12px; border-radius: 50%; background: #666; }
+    .status-bar { display: flex; align-items: center; gap: 10px; padding: 12px; background: #0d0d14; border-radius: 8px; border: 1px solid #1a1a2e; margin-bottom: 16px; }
+    .status-dot { width: 10px; height: 10px; border-radius: 50%; background: #666; }
     .status-dot.online { background: #00ff88; animation: pulse 1.5s infinite; }
     .status-dot.connecting { background: #ffaa00; animation: spin 1s linear infinite; }
     .status-dot.error { background: #ff3333; }
     @keyframes pulse { 0%,100% { opacity: 0.6; transform: scale(1); } 50% { opacity: 1; transform: scale(1.2); } }
     @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-    .status-text { font-family: monospace; font-weight: 600; }
+    .status-text { font-family: monospace; font-weight: 600; font-size: 12px; }
     
-    .log-container { background: #0a0a0f; border: 1px solid #1a1a2e; border-radius: 12px; height: 300px; overflow-y: auto; padding: 16px; font-family: monospace; font-size: 12px; line-height: 1.6; }
-    .log-line { color: #ccc; margin-bottom: 4px; }
+    .log-container { background: #0a0a0f; border: 1px solid #1a1a2e; border-radius: 8px; height: 250px; overflow-y: auto; padding: 12px; font-family: monospace; font-size: 11px; line-height: 1.5; }
+    .log-line { color: #ccc; margin-bottom: 2px; }
     .log-line.success { color: #00ff88; }
     .log-line.error { color: #ff3333; }
     .log-line.warning { color: #ffaa00; }
     .log-line.info { color: #00ff88; }
     
-    .tabs { display: flex; gap: 8px; margin-bottom: 24px; }
-    .tab { padding: 12px 24px; background: #0d0d14; border: 1px solid #1a1a2e; border-radius: 8px; color: #888; cursor: pointer; font-family: monospace; font-weight: 600; transition: all 0.2s; }
+    .tabs { display: flex; gap: 6px; margin-bottom: 16px; }
+    .tab { padding: 10px 20px; background: #0d0d14; border: 1px solid #1a1a2e; border-radius: 6px; color: #888; cursor: pointer; font-family: monospace; font-weight: 600; font-size: 11px; transition: all 0.2s; }
     .tab.active { background: #00ff88; color: #000; border-color: #00ff88; }
     .tab:hover:not(.active) { border-color: #00ff88; color: #00ff88; }
     
     .hidden { display: none !important; }
-    .row { display: flex; gap: 16px; }
+    .row { display: flex; gap: 12px; }
     .row > * { flex: 1; }
     
+    .section { margin-bottom: 20px; }
+    .section-title { color: #00ff88; font-size: 11px; font-weight: 700; letter-spacing: 1px; margin-bottom: 12px; text-transform: uppercase; }
+    
+    .btn { padding: 10px 20px; border-radius: 8px; font-size: 12px; font-weight: 700; font-family: monospace; cursor: pointer; border: none; }
+    .btn-primary { background: #00ff88; color: #000; }
+    .btn-danger { background: #ff3333; color: #fff; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    
+    .cmd-btn { padding: 12px; border-radius: 8px; background: #0a0a0f; border: 1px solid #1a1a2e; text-align: center; cursor: pointer; }
+    .cmd-btn:hover { border-color: #00ff88; background: #101018; }
+    .cmd-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .cmd-icon { font-size: 18px; margin-bottom: 3px; display: block; }
+    .cmd-name { font-size: 10px; font-weight: 700; color: #fff; font-family: monospace; margin-bottom: 1px; }
+    .cmd-desc { font-size: 8px; color: #888; font-family: monospace; }
+    
+    .status-bar { display: flex; align-items: center; gap: 8px; padding: 10px; background: #0d0d14; border-radius: 8px; border: 1px solid #1a1a2e; margin-bottom: 12px; }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #666; }
+    .status-dot.online { background: #00ff88; animation: pulse 1.5s infinite; }
+    .status-dot.connecting { background: #ffaa00; animation: spin 1s linear infinite; }
+    .status-dot.error { background: #ff3333; }
+    @keyframes pulse { 0%,100% { opacity: 0.6; transform: scale(1); } 50% { opacity: 1; transform: scale(1.2); } }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    .status-text { font-family: monospace; font-weight: 600; font-size: 11px; }
+    
+    .log-container { background: #0a0a0f; border: 1px solid #1a1a2e; border-radius: 8px; height: 200px; overflow-y: auto; padding: 10px; font-family: monospace; font-size: 10px; line-height: 1.4; }
+    .log-line { color: #ccc; margin-bottom: 1px; }
+    .log-line.success { color: #00ff88; }
+    .log-line.error { color: #ff3333; }
+    .log-line.warning { color: #ffaa00; }
+    .log-line.info { color: #00ff88; }
+    
+    .tabs { display: flex; gap: 6px; margin-bottom: 16px; }
+    .tab { padding: 10px 16px; background: #0d0d14; border: 1px solid #1a1a2e; border-radius: 6px; color: #888; cursor: pointer; font-family: monospace; font-weight: 600; font-size: 11px; transition: all 0.2s; }
+    .tab.active { background: #00ff88; color: #000; border-color: #00ff88; }
+    .tab:hover:not(.active) { border-color: #00ff88; color: #00ff88; }
+    
+    .row { display: flex; gap: 12px; }
+    .row > * { flex: 1; }
+    
+    .cmd-btn { padding: 12px; border-radius: 8px; background: #0a0a0f; border: 1px solid #1a1a2e; text-align: center; cursor: pointer; }
+    .cmd-btn:hover { border-color: #00ff88; background: #101018; }
+    .cmd-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .cmd-icon { font-size: 18px; margin-bottom: 3px; display: block; }
+    .cmd-name { font-size: 10px; font-weight: 700; color: #fff; font-family: monospace; margin-bottom: 2px; }
+    .cmd-desc { font-size: 8px; color: #888; font-family: monospace; }
+    
+    .cmd-btn-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+    .cmd-btn { padding: 12px; border-radius: 8px; background: #0a0a0f; border: 1px solid #1a1a2e; text-align: center; cursor: pointer; }
+    .cmd-btn:hover { border-color: #00ff88; background: #101018; }
+    .cmd-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .cmd-icon { font-size: 18px; margin-bottom: 3px; display: block; }
+    .cmd-name { font-size: 10px; font-weight: 700; color: #fff; font-family: monospace; margin-bottom: 2px; }
+    .cmd-desc { font-size: 8px; color: #888; font-family: monospace; }
+    
+    @keyframes pulse { 0%,100% { opacity: 0.6; transform: scale(1); } 50% { opacity: 1; transform: scale(1.2); } }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    
     @media (max-width: 768px) {
-      .container { padding: 16px; }
-      .btn-grid { grid-template-columns: 1fr; }
-      .row { flex-direction: column; gap: 16px; }
+      .container { padding: 12px; }
+      .row { flex-direction: column; gap: 12px; }
     }
   </style>
 </head>
@@ -79,70 +134,71 @@
       <div class="subtitle">Nuke Bot Control Panel</div>
     </div>
 
-    <div class="status-bar">
-      <div class="status-dot" id="statusDot"></div>
-      <div class="status-text" id="statusText">Disconnected</div>
-      <span style="margin-left: auto; color: #666; font-size: 12px;" id="backendStatus">Backend: Unknown</span>
+    <!-- MAIN TABS: APP BOT | SELFBOT -->
+    <div class="tabs" style="margin-bottom: 20px;">
+      <button class="tab active" onclick="showMainTab('appbot')">🤖 APP BOT (Backend)</button>
+      <button class="tab" onclick="showMainTab('selfbot')">👤 SELFBOT (Direct)</button>
     </div>
 
-    <div class="tabs">
-      <button class="tab active" onclick="showPage('config')">Configuration</button>
-      <button class="tab" onclick="showPage('dashboard')">Dashboard</button>
-    </div>
+    <!-- ==================== APP BOT TAB (Backend WebSocket) ==================== -->
+    <div class="page active" id="page-appbot">
+      <div class="status-bar">
+        <div class="status-dot" id="appbotStatusDot"></div>
+        <div class="status-text" id="appbotStatusText">Disconnected</div>
+        <span style="margin-left: auto; color: #666; font-size: 10px;">Backend: <span id="appbotBackendStatus">Unknown</span></span>
+      </div>
 
-    <!-- CONFIG PAGE -->
-    <div class="page active" id="page-config">
       <div class="card">
-        <div class="card-title">Bot Configuration</div>
+        <div class="section-title">App Bot Configuration</div>
         <div class="row">
           <div class="input-group">
             <label class="input-label">Bot Token</label>
-            <input type="password" class="input" id="botToken" placeholder="MTxxxxxxxxxxxxxxxxxxxx.xxxx.xxxxxxxxxxxxxxxxxxxxxxxx">
+            <input type="password" class="input" id="appbotToken" placeholder="MTxxxxxxxxxxxxxxxxxxxx.xxxx.xxxxxxxxxxxxxxxxxxxxxxxx">
           </div>
           <div class="input-group">
             <label class="input-label">Server ID</label>
-            <input type="text" class="input" id="serverId" placeholder="123456789012345678" inputmode="numeric">
+            <input type="text" class="input" id="appbotServerId" placeholder="123456789012345678" inputmode="numeric">
           </div>
         </div>
         <div class="input-group">
           <label class="input-label">Custom Name</label>
-          <input type="text" class="input" id="customName" placeholder="KENZO x RYUGA" value="KENZO x RYUGA">
+          <input type="text" class="input" id="appbotCustomName" placeholder="KENZO x RYUGA" value="KENZO x RYUGA">
         </div>
-        <div style="display: flex; gap: 12px; margin-top: 24px;">
-          <button class="btn btn-primary" onclick="connectBot()" style="flex: 1;">▶ CONNECT</button>
-          <button class="btn btn-danger" onclick="disconnectBot()" style="flex: 1;" id="disconnectBtn" disabled>■ DISCONNECT</button>
+        <div style="display: flex; gap: 8px; margin-top: 16px;">
+          <button class="btn btn-primary" onclick="connectAppBot()" style="flex: 1;">▶ CONNECT</button>
+          <button class="btn btn-danger" onclick="disconnectAppBot()" id="appbotDisconnectBtn" disabled style="flex: 1;">■ DISCONNECT</button>
         </div>
       </div>
 
-      <div class="card">
-        <div class="card-title">Quick Commands (Requires Connection)</div>
-        <div class="btn-grid" id="quickCommands" style="opacity: 0.5; pointer-events: none;">
-          <button class="cmd-btn" onclick="sendCommand('BAN_ALL')" id="cmdBanAll">
+      <div class="card" id="appbotCommands" style="opacity: 0.5; pointer-events: none;">
+        <div class="section-title">Commands (Requires Connection)</div>
+        <div class="cmd-btn-grid" id="appbotCommandsGrid">
+          <button class="cmd-btn" onclick="sendAppBotCommand('BAN_ALL')">
             <span class="cmd-icon">🔨</span>
             <span class="cmd-name">BAN ALL</span>
             <span class="cmd-desc">Ban every member</span>
           </button>
-          <button class="cmd-btn" onclick="sendCommand('KICK_ALL')" id="cmdKickAll">
+          <button class="cmd-btn" onclick="sendAppBotCommand('KICK_ALL')">
             <span class="cmd-icon">👢</span>
             <span class="cmd-name">KICK ALL</span>
             <span class="cmd-desc">Kick every member</span>
           </button>
-          <button class="cmd-btn" onclick="sendCommand('SPAM_ALL')" id="cmdSpamAll">
+          <button class="cmd-btn" onclick="sendAppBotCommand('SPAM_ALL')">
             <span class="cmd-icon">💬</span>
             <span class="cmd-name">SPAM ALL</span>
             <span class="cmd-desc">Flood all channels</span>
           </button>
-          <button class="cmd-btn" onclick="sendCommand('DELETE_ALL')" id="cmdDeleteAll">
+          <button class="cmd-btn" onclick="sendAppBotCommand('DELETE_ALL')">
             <span class="cmd-icon">🗑</span>
             <span class="cmd-name">DELETE CHANNELS</span>
             <span class="cmd-desc">Remove all channels</span>
           </button>
-          <button class="cmd-btn" onclick="sendCommand('CREATE_CHANNELS')" id="cmdCreateChannels">
+          <button class="cmd-btn" onclick="sendAppBotCommand('CREATE_CHANNELS')">
             <span class="cmd-icon">➕</span>
             <span class="cmd-name">CREATE CHANNELS</span>
             <span class="cmd-desc">Mass create channels</span>
           </button>
-          <button class="cmd-btn" onclick="sendCommand('CLAIM_ROLES')" id="cmdClaimRoles">
+          <button class="cmd-btn" onclick="sendAppBotCommand('CLAIM_ROLES')">
             <span class="cmd-icon">⭐</span>
             <span class="cmd-name">CLAIM ROLES</span>
             <span class="cmd-desc">Grab all roles</span>
@@ -151,145 +207,269 @@
       </div>
     </div>
 
-    <!-- DASHBOARD PAGE -->
-    <div class="page" id="page-dashboard">
+    <!-- ==================== SELFBOT TAB (Direct WebSocket) ==================== -->
+    <div class="page" id="page-selfbot">
+      <div class="status-bar">
+        <div class="status-dot" id="selfbotStatusDot"></div>
+        <div class="status-text" id="selfbotStatusText">Disconnected</div>
+        <span style="margin-left: auto; color: #666; font-size: 10px;">Direct WebSocket</span>
+      </div>
+
       <div class="card">
-        <div class="card-title">Live Activity Log</div>
-        <div class="log-container" id="logContainer"></div>
+        <div class="section-title">Selfbot Configuration</div>
+        <div class="input-group">
+          <label class="input-label">User Token</label>
+          <input type="password" class="input" id="selfbotToken" placeholder="MTxxxxxxxxxxxxxxxxxxxx.xxxx.xxxxxxxxxxxxxxxxxxxxxxxx">
+        </div>
+        <div class="input-group">
+          <label class="input-label">Server ID</label>
+          <input type="text" class="input" id="selfbotServerId" placeholder="123456789012345678" inputmode="numeric">
+        </div>
+        <div class="input-group">
+          <label class="input-label">Custom Name</label>
+          <input type="text" class="input" id="selfbotCustomName" placeholder="KENZO x RYUGA" value="KENZO x RYUGA">
+        </div>
+        <div style="display: flex; gap: 8px; margin-top: 16px;">
+          <button class="btn btn-primary" onclick="connectSelfbot()" style="flex: 1;">▶ CONNECT</button>
+          <button class="btn btn-danger" onclick="disconnectSelfbot()" id="selfbotDisconnectBtn" disabled style="flex: 1;">■ DISCONNECT</button>
+        </div>
+      </div>
+
+      <div class="card" id="selfbotCommands" style="opacity: 0.5; pointer-events: none;">
+        <div class="section-title">Commands (Requires Connection)</div>
+        <div class="cmd-btn-grid" id="selfbotCommandsGrid">
+          <button class="cmd-btn" onclick="sendSelfbotCommand('BAN_ALL')">
+            <span class="cmd-icon">🔨</span>
+            <span class="cmd-name">BAN ALL</span>
+            <span class="cmd-desc">Ban every member</span>
+          </button>
+          <button class="cmd-btn" onclick="sendSelfbotCommand('KICK_ALL')">
+            <span class="cmd-icon">👢</span>
+            <span class="cmd-name">KICK ALL</span>
+            <span class="cmd-desc">Kick every member</span>
+          </button>
+          <button class="cmd-btn" onclick="sendSelfbotCommand('SPAM_ALL')">
+            <span class="cmd-icon">💬</span>
+            <span class="cmd-name">SPAM ALL</span>
+            <span class="cmd-desc">Flood all channels</span>
+          </button>
+          <button class="cmd-btn" onclick="sendSelfbotCommand('DELETE_ALL')">
+            <span class="cmd-icon">🗑</span>
+            <span class="cmd-name">DELETE CHANNELS</span>
+            <span class="cmd-desc">Remove all channels</span>
+          </button>
+          <button class="cmd-btn" onclick="sendSelfbotCommand('CREATE_CHANNELS')">
+            <span class="cmd-icon">➕</span>
+            <span class="cmd-name">CREATE CHANNELS</span>
+            <span class="cmd-desc">Mass create channels</span>
+          </button>
+          <button class="cmd-btn" onclick="sendSelfbotCommand('CLAIM_ROLES')">
+            <span class="cmd-icon">⭐</span>
+            <span class="cmd-name">CLAIM ROLES</span>
+            <span class="cmd-desc">Grab all roles</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SHARED LOG CONTAINER -->
+    <div class="card">
+      <div class="section-title">Activity Log</div>
+      <div class="log-container" id="logContainer"></div>
+      <div style="display: flex; gap: 8px; margin-top: 12px;">
+        <button class="btn" onclick="clearLog()" style="flex: 1;">🗑 CLEAR LOG</button>
+        <button class="btn btn-primary" onclick="saveLog()" style="flex: 1;">💾 SAVE LOG</button>
       </div>
     </div>
   </div>
 
   <script>
-    // Configuration
-    const BACKEND_URL = 'wss://nuke-bot-on85.onrender.com';
+    // ==================== STATE ====================
+    let appBotWs = null;
+    let selfBotWs = null;
+    let appBotConnected = false;
+    let selfBotConnected = false;
     
-    // State
-    let ws = null;
-    let isConnected = false;
-    let botToken = '';
-    let serverId = '';
-    let customName = '';
-    
-    // DOM Elements
-    const statusDot = document.getElementById('statusDot');
-    const statusText = document.getElementById('statusText');
-    const backendStatus = document.getElementById('backendStatus');
-    const logContainer = document.getElementById('logContainer');
-    const quickCommands = document.getElementById('quickCommands');
-    const disconnectBtn = document.getElementById('disconnectBtn');
-    
-    // Utility
+    // ==================== UTILITIES ====================
     function log(message, type = 'info') {
       const timestamp = new Date().toLocaleTimeString();
       const line = document.createElement('div');
       line.className = 'log-line ' + type;
       line.textContent = '[' + timestamp + '] ' + message;
-      logContainer.appendChild(line);
-      logContainer.scrollTop = logContainer.scrollHeight;
+      document.getElementById('logContainer').appendChild(line);
+      document.getElementById('logContainer').scrollTop = document.getElementById('logContainer').scrollHeight;
     }
     
-    function setStatus(status) {
-      isConnected = (status === 'online');
-      statusDot.className = 'status-dot ' + status;
-      statusText.textContent = status.charAt(0).toUpperCase() + status.slice(1);
-      document.getElementById('disconnectBtn').disabled = !isConnected;
-      document.getElementById('quickCommands').style.opacity = isConnected ? '1' : '0.5';
-      document.getElementById('quickCommands').style.pointerEvents = isConnected ? 'auto' : 'none';
-    }
-    
-    function setBackendStatus(text) {
-      document.getElementById('backendStatus').textContent = 'Backend: ' + text;
-    }
-    
-    // WebSocket Connection
-    function connect() {
-      botToken = document.getElementById('botToken').value.trim();
-      serverId = document.getElementById('serverId').value.trim();
-      customName = document.getElementById('customName').value.trim();
+    function setAppBotStatus(status) {
+      const dot = document.getElementById('appbotStatusDot');
+      const text = document.getElementById('appbotStatusText');
+      const btn = document.getElementById('appbotDisconnectBtn');
+      const cmds = document.getElementById('appbotCommandsGrid');
       
-      if (!botToken) {
+      if (status === 'online') {
+        dot.className = 'status-dot online';
+        text.textContent = 'Online';
+        btn.disabled = false;
+        document.getElementById('appbotCommandsGrid').style.opacity = '1';
+        document.getElementById('appbotCommandsGrid').style.pointerEvents = 'auto';
+      } else if (status === 'connecting') {
+        dot.className = 'status-dot connecting';
+        text.textContent = 'Connecting...';
+        btn.disabled = true;
+        document.getElementById('appbotCommandsGrid').style.opacity = '0.5';
+        document.getElementById('appbotCommandsGrid').style.pointerEvents = 'none';
+      } else if (status === 'error') {
+        dot.className = 'status-dot error';
+        text.textContent = 'Error';
+        btn.disabled = true;
+        document.getElementById('appbotCommandsGrid').style.opacity = '0.5';
+        document.getElementById('appbotCommandsGrid').style.pointerEvents = 'none';
+      } else {
+        dot.className = 'status-dot';
+        text.textContent = 'Disconnected';
+        btn.disabled = true;
+        document.getElementById('appbotCommandsGrid').style.opacity = '0.5';
+        document.getElementById('appbotCommandsGrid').style.pointerEvents = 'none';
+      }
+    }
+    
+    function setSelfBotStatus(status) {
+      const dot = document.getElementById('selfbotStatusDot');
+      const text = document.getElementById('selfbotStatusText');
+      const btn = document.getElementById('selfbotDisconnectBtn');
+      const cmds = document.getElementById('selfbotCommandsGrid');
+      
+      if (status === 'online') {
+        dot.className = 'status-dot online';
+        text.textContent = 'Online';
+        btn.disabled = false;
+        document.getElementById('selfbotCommandsGrid').style.opacity = '1';
+        document.getElementById('selfbotCommandsGrid').style.pointerEvents = 'auto';
+      } else if (status === 'connecting') {
+        dot.className = 'status-dot connecting';
+        text.textContent = 'Connecting...';
+        btn.disabled = true;
+        document.getElementById('selfbotCommandsGrid').style.opacity = '0.5';
+        document.getElementById('selfbotCommandsGrid').style.pointerEvents = 'none';
+      } else if (status === 'error') {
+        dot.className = 'status-dot error';
+        text.textContent = 'Error';
+        btn.disabled = true;
+        document.getElementById('selfbotCommandsGrid').style.opacity = '0.5';
+        document.getElementById('selfbotCommandsGrid').style.pointerEvents = 'none';
+      } else {
+        dot.className = 'status-dot';
+        text.textContent = 'Disconnected';
+        btn.disabled = true;
+        document.getElementById('selfbotCommandsGrid').style.opacity = '0.5';
+        document.getElementById('selfbotCommandsGrid').style.pointerEvents = 'none';
+      }
+    }
+    
+    function showMainTab(tab) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.tabs button').forEach(t => t.classList.remove('active'));
+      document.getElementById('page-' + tab).classList.add('active');
+      event.target.classList.add('active');
+    }
+    
+    function clearLog() {
+      document.getElementById('logContainer').innerHTML = '';
+    }
+    
+    function saveLog() {
+      const content = document.getElementById('logContainer').innerText;
+      const blob = new Blob([content], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'nuke-bot-log-' + new Date().toISOString().slice(0,19).replace(/:/g,'-') + '.txt';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+    
+    // ==================== APP BOT (Backend WebSocket) ====================
+    let appBotWs = null;
+    
+    function connectAppBot() {
+      const token = document.getElementById('appbotToken').value.trim();
+      const serverId = document.getElementById('appbotServerId').value.trim();
+      const customName = document.getElementById('appbotCustomName').value.trim();
+      
+      if (!token) {
         alert('Please enter bot token');
         return;
       }
       
-      log('Connecting to backend...', 'info');
-      document.getElementById('backendStatus').textContent = 'Backend: Connecting...';
-      setStatus('connecting');
+      log('[APP BOT] Connecting to backend...', 'info');
+      setAppBotStatus('connecting');
       
-      ws = new WebSocket('wss://nuke-bot-on85.onrender.com');
+      appBotWs = new WebSocket('wss://nuke-bot-on85.onrender.com');
       
-      ws.onopen = () => {
-        log('✅ Connected to backend', 'success');
-        document.getElementById('backendStatus').textContent = 'Backend: Connected';
-        ws.send(JSON.stringify({
+      appBotWs.onopen = () => {
+        log('[APP BOT] ✅ Connected to backend', 'success');
+        appBotWs.send(JSON.stringify({
           type: 'CONNECT',
-          token: botToken,
+          token: token,
           customName: customName || 'KENZO x RYUGA',
         }));
       };
       
-      ws.onmessage = (event) => {
+      appBotWs.onmessage = (event) => {
         try {
           const msg = JSON.parse(event.data);
           
           if (msg.type === 'LOG') {
-            log(msg.message, msg.message.includes('✅') || msg.message.includes('✓') ? 'success' : 
+            log('[APP BOT] ' + msg.message, msg.message.includes('✅') || msg.message.includes('✓') ? 'success' : 
                 msg.message.includes('❌') || msg.message.includes('✗') ? 'error' : 'info');
           } else if (msg.type === 'READY') {
-            log('🎉 Bot is ONLINE and ready!', 'success');
-            setStatus('online');
-            document.getElementById('backendStatus').textContent = 'Backend: Bot Online';
+            log('[APP BOT] 🎉 Bot is ONLINE and ready!', 'success');
+            setAppBotStatus('online');
           } else if (msg.type === 'ERROR') {
-            log('❌ ' + msg.message, 'error');
-            setStatus('error');
-            document.getElementById('backendStatus').textContent = 'Backend: Error';
+            log('[APP BOT] ❌ ' + msg.message, 'error');
+            setAppBotStatus('error');
           } else if (msg.type === 'CLOSE') {
-            log('Connection closed: ' + (msg.reason || msg.code), 'warning');
-            document.getElementById('backendStatus').textContent = 'Backend: Disconnected';
-            if (isConnected) setStatus('offline');
+            log('[APP BOT] Connection closed: ' + (msg.reason || msg.code), 'warning');
+            if (appBotConnected) setAppBotStatus('offline');
           }
         } catch (e) {
           console.error('Message parse error:', e);
         }
       };
       
-      ws.onerror = (err) => {
-        log('❌ Connection error: ' + err.message, 'error');
-        setStatus('error');
-        document.getElementById('backendStatus').textContent = 'Backend: Error';
+      appBotWs.onerror = (err) => {
+        log('[APP BOT] ❌ Connection error: ' + err.message, 'error');
+        setAppBotStatus('error');
       };
       
-      ws.onclose = () => {
-        log('Connection closed', 'warning');
-        document.getElementById('backendStatus').textContent = 'Backend: Disconnected';
-        if (isConnected) setStatus('offline');
+      appBotWs.onclose = () => {
+        log('[APP BOT] Connection closed', 'warning');
+        setAppBotStatus('offline');
       };
     }
     
-    function disconnect() {
-      if (ws) {
-        ws.close();
-        ws = null;
+    function disconnectAppBot() {
+      if (appBotWs) {
+        appBotWs.close();
+        appBotWs = null;
       }
-      setStatus('offline');
-      document.getElementById('backendStatus').textContent = 'Backend: Disconnected';
-      log('Disconnected', 'warning');
+      setAppBotStatus('offline');
+      log('[APP BOT] Disconnected', 'warning');
     }
     
-    function sendCommand(command) {
-      if (!ws || ws.readyState !== WebSocket.OPEN) {
-        log('Not connected', 'error');
+    function sendAppBotCommand(command) {
+      if (!appBotWs || appBotWs.readyState !== WebSocket.OPEN) {
+        log('[APP BOT] Not connected', 'error');
         return;
       }
       
+      const serverId = document.getElementById('appbotServerId').value.trim();
       const payload = {
         type: 'COMMAND',
         command,
         guildId: serverId
       };
       
-      // Add command-specific payload
       if (command === 'SPAM_ALL') {
         payload.message = 'SPAM';
         payload.perChannel = 1;
@@ -297,45 +477,200 @@
         payload.count = 50;
         payload.name = 'nuked';
         payload.type = 0;
-      } else if (command === 'BAN_ALL' || command === 'KICK_ALL' || command === 'DELETE_ALL') {
-        if (!serverId) {
-          log('Please enter Server ID in config', 'error');
+      } else if (['BAN_ALL', 'KICK_ALL', 'DELETE_ALL'].includes(command)) {
+        if (!document.getElementById('appbotServerId').value.trim()) {
+          log('[APP BOT] Please enter Server ID', 'error');
           return;
         }
       }
       
-      ws.send(JSON.stringify(payload));
-      log('📤 Sent command: ' + command, 'info');
+      appBotWs.send(JSON.stringify(payload));
+      log('[APP BOT] 📤 Sent command: ' + command, 'info');
     }
     
-    // Page Navigation
-    function showPage(page) {
-      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      document.getElementById('page-' + page).classList.add('active');
-      event.target.classList.add('active');
+    // ==================== SELFBOT (Direct WebSocket) ====================
+    let selfBotWs = null;
+    
+    function connectSelfbot() {
+      const token = document.getElementById('selfbotToken').value.trim();
+      const serverId = document.getElementById('selfbotServerId').value.trim();
+      const customName = document.getElementById('selfbotCustomName').value.trim();
+      
+      if (!token) {
+        alert('Please enter user token');
+        return;
+      }
+      
+      log('[SELFBOT] Connecting to Discord gateway...', 'info');
+      setSelfBotStatus('connecting');
+      
+      // Direct WebSocket to Discord (bypasses backend)
+      selfBotWs = new WebSocket('wss://gateway.discord.gg/?v=10&encoding=json');
+      let heartbeatInterval = null;
+      let resolved = false;
+      const timeout = setTimeout(() => {
+        if (!resolved) {
+          log('[SELFBOT] ❌ Gateway timeout (15s)', 'error');
+          setSelfBotStatus('error');
+        }
+      }, 15000);
+      
+      selfBotWs.onopen = () => {
+        log('[SELFBOT] ✅ WebSocket connected, waiting for HELLO...', 'success');
+      };
+      
+      selfBotWs.onmessage = (event) => {
+        try {
+          const msg = JSON.parse(event.data);
+          
+          if (msg.op === 10) {
+            const heartbeat = msg.d.heartbeat_interval;
+            log('[SELFBOT] ✅ HELLO received, heartbeat: ' + heartbeat + 'ms', 'success');
+            
+            heartbeatInterval = setInterval(() => {
+              if (selfBotWs && selfBotWs.readyState === WebSocket.OPEN) {
+                selfBotWs.send(JSON.stringify({ op: 1, d: null }));
+              }
+            }, heartbeat);
+            
+            selfBotWs.send(JSON.stringify({
+              op: 2,
+              d: {
+                token: token,
+                intents: 98351,
+                properties: {
+                  os: 'Windows',
+                  browser: 'Chrome',
+                  device: 'desktop',
+                },
+                compress: false,
+                presence: { 
+                  status: 'online', 
+                  since: 0, 
+                  activities: [{ name: customName || 'KENZO x RYUGA', type: 0 }], 
+                  afk: false 
+                },
+              },
+            }));
+            log('[SELFBOT] 📤 IDENTIFY sent', 'info');
+          } else if (msg.op === 0 && msg.t === 'READY') {
+            if (!resolved) {
+              resolved = true;
+              clearTimeout(timeout);
+              if (heartbeatInterval) clearInterval(heartbeatInterval);
+              log('[SELFBOT] 🎉 Selfbot READY on gateway!', 'success');
+              setSelfBotStatus('online');
+            }
+          } else if (msg.op === 9) {
+            log('[SELFBOT] ❌ Invalid session (op 9) - token may be invalid or account not in server', 'error');
+            if (!resolved) {
+              resolved = true;
+              clearTimeout(timeout);
+              if (heartbeatInterval) clearInterval(heartbeatInterval);
+              setSelfBotStatus('error');
+            }
+          } else if (msg.op === 11) {
+            // Heartbeat ACK - silent
+          }
+        } catch (e) {
+          console.error('Message error:', e);
+        }
+      };
+      
+      selfBotWs.onerror = (err) => {
+        log('[SELFBOT] ❌ Gateway error: ' + err.message, 'error');
+        if (!resolved) {
+          resolved = true;
+          clearTimeout(timeout);
+          setSelfBotStatus('error');
+        }
+      };
+      
+      selfBotWs.onclose = (e) => {
+        log('[SELFBOT] Gateway closed: code=' + e.code + ', reason=' + (e.reason || 'none'), 'warning');
+        if (heartbeatInterval) clearInterval(heartbeatInterval);
+        if (!resolved) {
+          const errorMsg = 
+            e.code === 4004 ? 'Invalid token' : 
+            e.code === 4003 ? 'Disallowed intent' :
+            e.code === 4005 ? 'Invalid intent' :
+            e.code === 4007 ? 'Invalid sequence' :
+            e.code === 4009 ? 'Invalid session' :
+            e.code === 4011 ? 'Account not in server' :
+            'Connection closed (' + e.code + ')';
+          log('[SELFBOT] ❌ ' + errorMsg, 'error');
+          setSelfBotStatus('error');
+        } else if (selfBotConnected) {
+          setSelfBotStatus('offline');
+        }
+      };
+    }
+    
+    function disconnectSelfbot() {
+      if (selfBotWs) {
+        selfBotWs.close();
+        selfBotWs = null;
+      }
+      setSelfBotStatus('offline');
+      log('[SELFBOT] Disconnected', 'warning');
+    }
+    
+    function sendSelfbotCommand(command) {
+      if (!selfBotWs || selfBotWs.readyState !== WebSocket.OPEN) {
+        log('[SELFBOT] Not connected', 'error');
+        return;
+      }
+      
+      const serverId = document.getElementById('selfbotServerId').value.trim();
+      log('[SELFBOT] 📤 Sent command: ' + command, 'info');
+      
+      // These commands need REST API calls - we'll send them to backend or direct
+      if (command === 'SPAM_ALL') {
+        // For selfbot, we'd need REST API - simplified for now
+        log('[SELFBOT] SPAM_ALL requires REST API - use App Bot tab for full features', 'warning');
+      } else if (command === 'BAN_ALL') {
+        log('[SELFBOT] BAN_ALL requires REST API - use App Bot tab for full features', 'warning');
+      }
+      // Add more as needed
+    }
+    
+    function clearLog() {
+      document.getElementById('logContainer').innerHTML = '';
+    }
+    
+    function saveLog() {
+      const content = document.getElementById('logContainer').innerText;
+      const blob = new Blob([content], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'nuke-bot-log-' + new Date().toISOString().slice(0,19).replace(/:/g,'-') + '.txt';
+      a.click();
+      URL.revokeObjectURL(url);
     }
     
     // Load saved config
     window.addEventListener('load', () => {
-      const savedToken = localStorage.getItem('botToken');
-      const savedServerId = localStorage.getItem('serverId');
-      const savedName = localStorage.getItem('customName');
+      ['appbotToken', 'appbotServerId', 'appbotCustomName', 'selfbotToken', 'selfbotServerId', 'selfbotCustomName'].forEach(id => {
+        const saved = localStorage.getItem(id);
+        if (saved) document.getElementById(id).value = saved;
+      });
       
-      if (savedToken) document.getElementById('botToken').value = savedToken;
-      if (savedServerId) document.getElementById('serverId').value = savedServerId;
-      if (savedName) document.getElementById('customName').value = savedName;
-      
-      // Auto-connect if token exists
-      if (savedToken) {
-        log('Auto-connecting with saved token...', 'info');
-        setTimeout(connect, 1000);
+      // Auto-connect if tokens exist
+      if (localStorage.getItem('appbotToken')) {
+        log('Auto-connecting App Bot...', 'info');
+        setTimeout(connectAppBot, 1000);
+      }
+      if (localStorage.getItem('selfbotToken')) {
+        log('Auto-connecting Selfbot...', 'info');
+        setTimeout(connectSelfbot, 1500);
       }
     });
     
     // Save config on input
-    ['botToken', 'serverId', 'customName'].forEach(id => {
-      document.getElementById(id).addEventListener('input', (e) => {
+    ['appbotToken', 'appbotServerId', 'appbotCustomName', 'selfbotToken', 'selfbotServerId', 'selfbotCustomName'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('input', (e) => {
         localStorage.setItem(id, e.target.value);
       });
     });
