@@ -285,25 +285,25 @@
       if (status === 'online') {
         dot.className = 'status-dot online';
         text.textContent = 'Online';
-        btn.disabled = false;
+        $('btnAppBotDisconnect').disabled = false;
         $('appbotCommandsGrid').style.opacity = '1';
         $('appbotCommandsGrid').style.pointerEvents = 'auto';
       } else if (status === 'connecting') {
         dot.className = 'status-dot connecting';
-        text.textContent = 'Connecting...';
-        btn.disabled = true;
+        $('appbotStatusText').textContent = 'Connecting...';
+        $('btnAppBotDisconnect').disabled = true;
         $('appbotCommandsGrid').style.opacity = '0.5';
         $('appbotCommandsGrid').style.pointerEvents = 'none';
       } else if (status === 'error') {
         dot.className = 'status-dot error';
-        text.textContent = 'Error';
-        btn.disabled = true;
+        $('appbotStatusText').textContent = 'Error';
+        $('btnAppBotDisconnect').disabled = true;
         $('appbotCommandsGrid').style.opacity = '0.5';
         $('appbotCommandsGrid').style.pointerEvents = 'none';
       } else {
         dot.className = 'status-dot';
-        text.textContent = 'Disconnected';
-        btn.disabled = true;
+        $('appbotStatusText').textContent = 'Disconnected';
+        $('btnAppBotDisconnect').disabled = true;
         $('appbotCommandsGrid').style.opacity = '0.5';
         $('appbotCommandsGrid').style.pointerEvents = 'none';
       }
@@ -319,44 +319,28 @@
       
       if (status === 'online') {
         dot.className = 'status-dot online';
-        text.textContent = 'Online';
-        const btn = $('btnSelfbotDisconnect');
-        if (btn) btn.disabled = false;
-        const cmdsEl = $('selfbotCommandsGrid');
-        if (cmdsEl) {
-          cmdsEl.style.opacity = '1';
-          cmdsEl.style.pointerEvents = 'auto';
-        }
+        $('selfbotStatusText').textContent = 'Online';
+        $('btnSelfbotDisconnect').disabled = false;
+        $('selfbotCommandsGrid').style.opacity = '1';
+        $('selfbotCommandsGrid').style.pointerEvents = 'auto';
       } else if (status === 'connecting') {
         dot.className = 'status-dot connecting';
-        text.textContent = 'Connecting...';
-        const btn = $('btnSelfbotDisconnect');
-        if (btn) btn.disabled = true;
-        const cmdsEl = $('selfbotCommandsGrid');
-        if (cmdsEl) {
-          cmdsEl.style.opacity = '0.5';
-          cmdsEl.style.pointerEvents = 'none';
-        }
+        $('selfbotStatusText').textContent = 'Connecting...';
+        $('btnSelfbotDisconnect').disabled = true;
+        $('selfbotCommandsGrid').style.opacity = '0.5';
+        $('selfbotCommandsGrid').style.pointerEvents = 'none';
       } else if (status === 'error') {
         dot.className = 'status-dot error';
-        text.textContent = 'Error';
-        const btn = $('btnSelfbotDisconnect');
-        if (btn) btn.disabled = true;
-        const cmdsEl = $('selfbotCommandsGrid');
-        if (cmdsEl) {
-          cmdsEl.style.opacity = '0.5';
-          cmdsEl.style.pointerEvents = 'none';
-        }
+        $('selfbotStatusText').textContent = 'Error';
+        $('btnSelfbotDisconnect').disabled = true;
+        $('selfbotCommandsGrid').style.opacity = '0.5';
+        $('selfbotCommandsGrid').style.pointerEvents = 'none';
       } else {
         dot.className = 'status-dot';
-        text.textContent = 'Disconnected';
-        const btn = $('btnSelfbotDisconnect');
-        if (btn) btn.disabled = true;
-        const cmdsEl = $('selfbotCommandsGrid');
-        if (cmdsEl) {
-          cmdsEl.style.opacity = '0.5';
-          cmdsEl.style.pointerEvents = 'none';
-        }
+        $('selfbotStatusText').textContent = 'Disconnected';
+        $('btnSelfbotDisconnect').disabled = true;
+        $('selfbotCommandsGrid').style.opacity = '0.5';
+        $('selfbotCommandsGrid').style.pointerEvents = 'none';
       }
     }
     
@@ -422,112 +406,8 @@
         $('appbotCommandsGrid').style.pointerEvents = 'none';
       } else {
         dot.className = 'status-dot';
-        text.textContent = 'Disconnected';
-        btn.disabled = true;
-        $('appbotCommandsGrid').style.opacity = '0.5';
-        $('appbotCommandsGrid').style.pointerEvents = 'none';
-      }
-    }
-    
-    function setSelfBotStatus(status) {
-      const dot = $('selfbotStatusDot');
-      const text = $('selfbotStatusText');
-      const btn = $('btnSelfbotDisconnect');
-      const cmds = $('selfbotCommandsGrid');
-      
-      if (!dot || !text || !btn || !cmds) return;
-      
-      if (status === 'online') {
-        dot.className = 'status-dot online';
-        text.textContent = 'Online';
-        btn.disabled = false;
-        $('selfbotCommandsGrid').style.opacity = '1';
-        $('selfbotCommandsGrid').style.pointerEvents = 'auto';
-      } else if (status === 'connecting') {
-        dot.className = 'status-dot connecting';
-        text.textContent = 'Connecting...';
-        btn.disabled = true;
-        $('selfbotCommandsGrid').style.opacity = '0.5';
-        $('selfbotCommandsGrid').style.pointerEvents = 'none';
-      } else if (status === 'error') {
-        dot.className = 'status-dot error';
-        text.textContent = 'Error';
-        btn.disabled = true;
-        $('selfbotCommandsGrid').style.opacity = '0.5';
-        $('selfbotCommandsGrid').style.pointerEvents = 'none';
-      } else {
-        dot.className = 'status-dot';
-        text.textContent = 'Disconnected';
-        btn.disabled = true;
-        $('selfbotCommandsGrid').style.opacity = '0.5';
-        $('selfbotCommandsGrid').style.pointerEvents = 'none';
-      }
-    }
-    
-    function showMainTab(tab) {
-      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      const page = document.getElementById('page-' + tab);
-      const tabBtn = document.getElementById('tab-' + tab);
-      if (page) page.classList.add('active');
-      if (tabBtn) tabBtn.classList.add('active');
-    }
-    
-    function clearLog() {
-      const container = $('logContainer');
-      if (container) container.innerHTML = '';
-    }
-    
-    function saveLog() {
-      const container = $('logContainer');
-      if (!container) return;
-      const content = container.innerText;
-      const blob = new Blob([content], { type: 'text/plain' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'nuke-bot-log-' + new Date().toISOString().slice(0,19).replace(/:/g,'-') + '.txt';
-      a.click();
-      URL.revokeObjectURL(url);
-    }
-    
-    // ==================== APP BOT (Direct WebSocket to Discord) ====================
-    let appBotWs = null;
-    let appBotConnected = false;
-    let appBotHeartbeat = null;
-    let appBotResolved = false;
-    let appBotTimeout = null;
-    
-    function setAppBotStatus(status) {
-      const dot = $('appbotStatusDot');
-      const text = $('appbotStatusText');
-      const btn = $('btnAppBotDisconnect');
-      const cmds = $('appbotCommandsGrid');
-      
-      if (!dot || !text || !btn || !cmds) return;
-      
-      if (status === 'online') {
-        dot.className = 'status-dot online';
-        text.textContent = 'Online';
-        $('btnAppBotDisconnect').disabled = false;
-        $('appbotCommandsGrid').style.opacity = '1';
-        $('appbotCommandsGrid').style.pointerEvents = 'auto';
-      } else if (status === 'connecting') {
-        dot.className = 'status-dot connecting';
-        text.textContent = 'Connecting...';
+        $('appbotStatusText').textContent = 'Disconnected';
         $('btnAppBotDisconnect').disabled = true;
-        $('appbotCommandsGrid').style.opacity = '0.5';
-        $('appbotCommandsGrid').style.pointerEvents = 'none';
-      } else if (status === 'error') {
-        dot.className = 'status-dot error';
-        text.textContent = 'Error';
-        btn.disabled = true;
-        $('appbotCommandsGrid').style.opacity = '0.5';
-        $('appbotCommandsGrid').style.pointerEvents = 'none';
-      } else {
-        dot.className = 'status-dot';
-        text.textContent = 'Disconnected';
-        btn.disabled = true;
         $('appbotCommandsGrid').style.opacity = '0.5';
         $('appbotCommandsGrid').style.pointerEvents = 'none';
       }
@@ -678,8 +558,8 @@
       }
       if (appBotHeartbeat) clearInterval(appBotHeartbeat);
       appBotConnected = false;
-      log('[APP BOT] Disconnected', 'warning');
       setAppBotStatus('offline');
+      log('[APP BOT] Disconnected', 'warning');
     }
     
     // ==================== SELFBOT (Direct WebSocket) ====================
@@ -868,23 +748,40 @@
       });
       
       // Button event listeners
-      $('btnAppBotConnect').addEventListener('click', connectAppBot);
-      $('btnAppBotDisconnect').addEventListener('click', disconnectAppBot);
-      $('btnSelfbotConnect').addEventListener('click', connectSelfbot);
-      $('btnSelfbotDisconnect').addEventListener('click', disconnectSelfbot);
-      $('btnClearLog').addEventListener('click', clearLog);
-      $('btnSaveLog').addEventListener('click', saveLog);
+      const btnAppBotConnect = $('btnAppBotConnect');
+      if (btnAppBotConnect) btnAppBotConnect.addEventListener('click', connectAppBot);
+      
+      const btnAppBotDisconnect = $('btnAppBotDisconnect');
+      if (btnAppBotDisconnect) btnAppBotDisconnect.addEventListener('click', disconnectAppBot);
+      
+      const btnSelfbotConnect = $('btnSelfbotConnect');
+      if (btnSelfbotConnect) btnSelfbotConnect.addEventListener('click', connectSelfbot);
+      
+      const btnSelfbotDisconnect = $('btnSelfbotDisconnect');
+      if (btnSelfbotDisconnect) btnSelfbotDisconnect.addEventListener('click', disconnectSelfbot);
+      
+      const btnClearLog = $('btnClearLog');
+      if (btnClearLog) btnClearLog.addEventListener('click', clearLog);
+      
+      const btnSaveLog = $('btnSaveLog');
+      if (btnSaveLog) btnSaveLog.addEventListener('click', saveLog);
       
       // Command buttons - event delegation
-      $('appbotCommandsGrid').addEventListener('click', (e) => {
-        const btn = e.target.closest('[data-cmd]');
-        if (btn) sendAppBotCommand(btn.dataset.cmd);
-      });
+      const appbotGrid = $('appbotCommandsGrid');
+      if (appbotGrid) {
+        appbotGrid.addEventListener('click', (e) => {
+          const btn = e.target.closest('[data-cmd]');
+          if (btn) sendAppBotCommand(btn.dataset.cmd);
+        });
+      }
       
-      $('selfbotCommandsGrid').addEventListener('click', (e) => {
-        const btn = e.target.closest('[data-cmd]');
-        if (btn) sendSelfbotCommand(btn.dataset.cmd);
-      });
+      const selfbotGrid = $('selfbotCommandsGrid');
+      if (selfbotGrid) {
+        selfbotGrid.addEventListener('click', (e) => {
+          const btn = e.target.closest('[data-cmd]');
+          if (btn) sendSelfbotCommand(btn.dataset.cmd);
+        });
+      }
       
       // Input saving
       ['appbotToken', 'appbotServerId', 'appbotCustomName', 'selfbotToken', 'selfbotServerId', 'selfbotCustomName'].forEach(id => {
@@ -902,14 +799,18 @@
           const tab = btn.id.replace('tab-', '');
           document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
           document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-          document.getElementById('page-' + tab).classList.add('active');
+          const page = document.getElementById('page-' + tab);
+          if (page) page.classList.add('active');
           btn.classList.add('active');
         });
       });
       
       // Log buttons
-      $('btnClearLog').addEventListener('click', clearLog);
-      $('btnSaveLog').addEventListener('click', saveLog);
+      const btnClearLog = $('btnClearLog');
+      if (btnClearLog) btnClearLog.addEventListener('click', clearLog);
+      
+      const btnSaveLog = $('btnSaveLog');
+      if (btnSaveLog) btnSaveLog.addEventListener('click', saveLog);
       
       // Tab buttons
       $('tab-appbot').addEventListener('click', () => showMainTab('appbot'));
