@@ -1,0 +1,264 @@
+/* ==========================================================================
+   Discord Server Management Dashboard - Sleek Glassmorphic Dark UI Style
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
+
+:root {
+  /* HSL Color System - Highly refined space-dark tones */
+  --bg-deep: 228, 15%, 6%;       /* #090a0f */
+  --bg-slate: 225, 12%, 9%;      /* #12131a */
+  --bg-glass: 226, 12%, 12%;     /* #171923 */
+  
+  --primary: 235, 86%, 65%;      /* Discord Purple: #5865F2 */
+  --primary-glow: 235, 86%, 65%, 0.15;
+  --primary-hover: 235, 90%, 70%;
+  
+  --success: 145, 80%, 45%;      /* Discord Green: #57F287 */
+  --warning: 38, 95%, 55%;       /* Discord Yellow: #FEE75C */
+  --danger: 358, 85%, 60%;       /* Discord Red: #ED4245 */
+  --danger-glow: 358, 85%, 60%, 0.15;
+  
+  --text-primary: 0, 0%, 96%;    /* White/Light Gray */
+  --text-secondary: 220, 10%, 65%;/* Muted gray */
+  --text-dark: 220, 12%, 40%;
+  
+  --border-glass: 228, 12%, 18%, 0.4;
+  --border-glow: 235, 86%, 65%, 0.2;
+  
+  /* Layout Constants */
+  --sidebar-width: 260px;
+  --header-height: 70px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--border-glass)) transparent;
+}
+
+body {
+  background: radial-gradient(circle at 50% 0%, hsl(228, 20%, 12%) 0%, hsl(var(--bg-deep)) 80%);
+  color: hsl(var(--text-primary));
+  font-size: 15px;
+  line-height: 1.5;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: hsla(var(--border-glass));
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsla(var(--primary), 0.4);
+}
+
+/* Typography Headings */
+h1, h2, h3, h4, h5 {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+/* Core Visual Classes */
+.glass-panel {
+  background: rgba(var(--bg-glass), 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(var(--border-glass));
+  border-radius: 16px;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+}
+
+.glass-card {
+  background: rgba(var(--bg-slate), 0.5);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(var(--border-glass));
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.glass-card:hover {
+  border-color: rgba(var(--border-glow));
+  box-shadow: 0 4px 20px 0 rgba(var(--primary-glow));
+  transform: translateY(-2px);
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Button UI Components */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 18px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: hsl(var(--primary));
+  color: white;
+  box-shadow: 0 4px 15px rgba(var(--primary-glow));
+}
+.btn-primary:hover {
+  background: hsl(var(--primary-hover));
+  box-shadow: 0 6px 20px rgba(var(--primary-glow));
+  transform: translateY(-1px);
+}
+.btn-primary:active {
+  transform: translateY(1px);
+}
+
+.btn-danger {
+  background: hsl(var(--danger));
+  color: white;
+  box-shadow: 0 4px 15px rgba(var(--danger-glow));
+}
+.btn-danger:hover {
+  background: hsl(var(--danger), 0.95);
+  box-shadow: 0 6px 20px rgba(var(--danger-glow));
+}
+
+.btn-secondary {
+  background: rgba(var(--text-secondary), 0.15);
+  color: hsl(var(--text-primary));
+  border: 1px solid rgba(var(--border-glass));
+}
+.btn-secondary:hover {
+  background: rgba(var(--text-secondary), 0.25);
+  border-color: rgba(var(--text-secondary), 0.4);
+}
+
+/* Inputs & Form Fields */
+.input-field {
+  background: rgba(var(--bg-deep), 0.8);
+  border: 1px solid rgba(var(--border-glass));
+  color: hsl(var(--text-primary));
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.2s;
+  width: 100%;
+}
+.input-field:focus {
+  border-color: hsl(var(--primary));
+  box-shadow: 0 0 0 3px rgba(var(--primary-glow));
+}
+
+/* Table styling for lists */
+.custom-table-container {
+  overflow-x: auto;
+  width: 100%;
+}
+
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.custom-table th {
+  padding: 12px 16px;
+  color: hsl(var(--text-secondary));
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid rgba(var(--border-glass));
+  background: rgba(var(--bg-slate), 0.7);
+}
+
+.custom-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(var(--border-glass));
+  font-size: 14px;
+  vertical-align: middle;
+}
+
+.custom-table tr {
+  transition: background-color 0.2s ease;
+}
+
+.custom-table tr:hover {
+  background: rgba(var(--text-secondary), 0.04);
+}
+
+/* Pill status elements */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.badge-success {
+  background: rgba(var(--success), 0.15);
+  color: hsl(var(--success));
+  border: 1px solid rgba(var(--success), 0.25);
+}
+
+.badge-danger {
+  background: rgba(var(--danger), 0.15);
+  color: hsl(var(--danger));
+  border: 1px solid rgba(var(--danger), 0.25);
+}
+
+.badge-warning {
+  background: rgba(var(--warning), 0.15);
+  color: hsl(var(--warning));
+  border: 1px solid rgba(var(--warning), 0.25);
+}
+
+/* Shimmer Skeleton Loader */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, 
+    rgba(var(--bg-glass), 0.6) 25%, 
+    rgba(var(--text-secondary), 0.08) 37%, 
+    rgba(var(--bg-glass), 0.6) 63%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 4px;
+}
