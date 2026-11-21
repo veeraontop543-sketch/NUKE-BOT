@@ -137,11 +137,11 @@ wss.on('connection', (ws, req) => {
                 op: 2,
                 d: {
                   token: 'Bot ' + msg.token,
-                  intents: 98351,
+                  intents: 131071,
                   properties: {
-                    os: 'Android',
-                    browser: 'Discord Android',
-                    device: 'mobile',
+                    os: 'Windows',
+                    browser: 'Discord',
+                    device: 'Web',
                   },
                   compress: false,
                   presence: {
