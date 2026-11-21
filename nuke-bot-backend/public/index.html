@@ -372,6 +372,11 @@
     }
     
     // ==================== APP BOT (Direct WebSocket to Discord) ====================
+    let appBotWs = null;
+    let appBotConnected = false;
+    let appBotHeartbeat = null;
+    let appBotResolved = false;
+    let appBotTimeout = null;
     
     function setAppBotStatus(status) {
       const dot = $('appbotStatusDot');
@@ -558,6 +563,11 @@
     }
     
     // ==================== SELFBOT (Direct WebSocket) ====================
+    let selfBotWs = null;
+    let selfBotConnected = false;
+    let selfBotResolved = false;
+    let selfBotHeartbeat = null;
+    let selfBotTimeout = null;
     
     function setSelfBotStatus(status) {
       const dot = $('selfbotStatusDot');
@@ -807,8 +817,11 @@
       $('tab-selfbot').addEventListener('click', () => showMainTab('selfbot'));
       
       // Log buttons
-      $('btnClearLog').addEventListener('click', clearLog);
-      $('btnSaveLog').addEventListener('click', saveLog);
+      const btnClearLog = $('btnClearLog');
+      if (btnClearLog) btnClearLog.addEventListener('click', clearLog);
+      
+      const btnSaveLog = $('btnSaveLog');
+      if (btnSaveLog) btnSaveLog.addEventListener('click', saveLog);
       
       // Tab buttons
       $('tab-appbot').addEventListener('click', () => showMainTab('appbot'));
