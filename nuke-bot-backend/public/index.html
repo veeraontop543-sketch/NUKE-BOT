@@ -636,27 +636,43 @@
       if (status === 'online') {
         dot.className = 'status-dot online';
         text.textContent = 'Online';
-        btn.disabled = false;
-        $('selfbotCommandsGrid').style.opacity = '1';
-        $('selfbotCommandsGrid').style.pointerEvents = 'auto';
+        const btn = $('btnSelfbotDisconnect');
+        if (btn) btn.disabled = false;
+        const cmdsEl = $('selfbotCommandsGrid');
+        if (cmdsEl) {
+          cmdsEl.style.opacity = '1';
+          cmdsEl.style.pointerEvents = 'auto';
+        }
       } else if (status === 'connecting') {
         dot.className = 'status-dot connecting';
         text.textContent = 'Connecting...';
-        btn.disabled = true;
-        $('selfbotCommandsGrid').style.opacity = '0.5';
-        $('selfbotCommandsGrid').style.pointerEvents = 'none';
+        const btn = $('btnSelfbotDisconnect');
+        if (btn) btn.disabled = true;
+        const cmdsEl = $('selfbotCommandsGrid');
+        if (cmdsEl) {
+          cmdsEl.style.opacity = '0.5';
+          cmdsEl.style.pointerEvents = 'none';
+        }
       } else if (status === 'error') {
         dot.className = 'status-dot error';
         text.textContent = 'Error';
-        btn.disabled = true;
-        $('selfbotCommandsGrid').style.opacity = '0.5';
-        $('selfbotCommandsGrid').style.pointerEvents = 'none';
+        const btn = $('btnSelfbotDisconnect');
+        if (btn) btn.disabled = true;
+        const cmdsEl = $('selfbotCommandsGrid');
+        if (cmdsEl) {
+          cmdsEl.style.opacity = '0.5';
+          cmdsEl.style.pointerEvents = 'none';
+        }
       } else {
         dot.className = 'status-dot';
         text.textContent = 'Disconnected';
-        btn.disabled = true;
-        $('selfbotCommandsGrid').style.opacity = '0.5';
-        $('selfbotCommandsGrid').style.pointerEvents = 'none';
+        const btn = $('btnSelfbotDisconnect');
+        if (btn) btn.disabled = true;
+        const cmdsEl = $('selfbotCommandsGrid');
+        if (cmdsEl) {
+          cmdsEl.style.opacity = '0.5';
+          cmdsEl.style.pointerEvents = 'none';
+        }
       }
     }
     
@@ -816,7 +832,7 @@
         });
       });
       
-      // Button event listeners - with error handling
+      // Button event listeners
       const btnAppBotConnect = $('btnAppBotConnect');
       if (btnAppBotConnect) btnAppBotConnect.addEventListener('click', connectAppBot);
       
@@ -859,7 +875,7 @@
           const saved = localStorage.getItem(id);
           if (saved) el.value = saved;
           el.addEventListener('input', () => localStorage.setItem(id, el.value));
-        }
+        });
       });
       
       // Tab switching
@@ -903,6 +919,17 @@
     } else {
       init();
     }
+    
+    // Global error handler
+    window.addEventListener('error', (e) => {
+      log('❌ JavaScript Error: ' + e.message, 'error');
+      console.error('Global error:', e);
+    });
+    
+    window.addEventListener('unhandledrejection', (e) => {
+      log('❌ Unhandled Promise Rejection: ' + e.reason, 'error');
+      console.error('Unhandled rejection:', e);
+    });
   </script>
 </body>
 </html>
