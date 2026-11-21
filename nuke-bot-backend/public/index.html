@@ -72,7 +72,7 @@
     .btn-primary:hover { background: #00e67a; }
     .btn-danger { background: #ff3333; color: #fff; }
     .btn-danger:hover { background: #ff1a1a; }
-    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
     
     .cmd-btn { padding: 12px; border-radius: 8px; background: #0a0a0f; border: 1px solid #1a1a2e; text-align: center; cursor: pointer; transition: all 0.2s; }
     .cmd-btn:hover { border-color: #00ff88; background: #101018; }
@@ -256,6 +256,7 @@
     let selfBotConnected = false;
     let selfBotResolved = false;
     let selfBotHeartbeat = null;
+    let selfBotTimeout = null;
     
     // ==================== DOM ELEMENTS ====================
     const $ = (id) => document.getElementById(id);
@@ -266,8 +267,11 @@
       const line = document.createElement('div');
       line.className = 'log-line ' + type;
       line.textContent = '[' + new Date().toLocaleTimeString() + '] ' + message;
-      $('logContainer').appendChild(line);
-      $('logContainer').scrollTop = $('logContainer').scrollHeight;
+      const container = $('logContainer');
+      if (container) {
+        container.appendChild(line);
+        container.scrollTop = container.scrollHeight;
+      }
       console.log('[' + type.toUpperCase() + ']', message);
     }
     
@@ -276,6 +280,8 @@
       const text = $('appbotStatusText');
       const btn = $('btnAppBotDisconnect');
       const cmds = $('appbotCommandsGrid');
+      
+      if (!dot || !text || !btn || !cmds) return;
       
       if (status === 'online') {
         dot.className = 'status-dot online';
@@ -310,6 +316,8 @@
       const btn = $('btnSelfbotDisconnect');
       const cmds = $('selfbotCommandsGrid');
       
+      if (!dot || !text || !btn || !cmds) return;
+      
       if (status === 'online') {
         dot.className = 'status-dot online';
         text.textContent = 'Online';
@@ -340,16 +348,21 @@
     function showMainTab(tab) {
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      $('page-' + tab).classList.add('active');
-      document.getElementById('tab-' + tab).classList.add('active');
+      const page = document.getElementById('page-' + tab);
+      const tabBtn = document.getElementById('tab-' + tab);
+      if (page) page.classList.add('active');
+      if (tabBtn) tabBtn.classList.add('active');
     }
     
     function clearLog() {
-      $('logContainer').innerHTML = '';
+      const container = $('logContainer');
+      if (container) container.innerHTML = '';
     }
     
     function saveLog() {
-      const content = $('logContainer').innerText;
+      const container = $('logContainer');
+      if (!container) return;
+      const content = container.innerText;
       const blob = new Blob([content], { type: 'text/plain' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -360,7 +373,145 @@
     }
     
     function showBackendStatus(text) {
-      $('appbotBackendStatus').textContent = text;
+      const el = $('appbotBackendStatus');
+      if (el) el.textContent = text;
+    }
+    
+    // ==================== APP BOT (Backend WebSocket) ====================
+    let appBotWs = null;
+    let appBotConnected = false;
+    
+    function setAppBotStatus(status) {
+      const dot = $('appbotStatusDot');
+      const text = $('appbotStatusText');
+      const btn = $('btnAppBotDisconnect');
+      const cmds = $('appbotCommandsGrid');
+      
+      if (!dot || !text || !btn || !cmds) return;
+      
+      if (status === 'online') {
+        dot.className = 'status-dot online';
+        text.textContent = 'Online';
+        btn.disabled = false;
+        const cmdsEl = $('appbotCommandsGrid');
+        if (cmdsEl) {
+          cmdsEl.style.opacity = '1';
+          cmdsEl.style.pointerEvents = 'auto';
+        }
+      } else if (status === 'connecting') {
+        dot.className = 'status-dot connecting';
+        text.textContent = 'Connecting...';
+        const btn = $('btnAppBotDisconnect');
+        if (btn) btn.disabled = true;
+        const cmdsEl = $('appbotCommandsGrid');
+        if (cmdsEl) {
+          cmdsEl.style.opacity = '0.5';
+          cmdsEl.style.pointerEvents = 'none';
+        }
+      } else if (status === 'error') {
+        dot.className = 'status-dot error';
+        text.textContent = 'Error';
+        const btn = $('btnAppBotDisconnect');
+        if (btn) btn.disabled = true;
+        const cmdsEl = $('appbotCommandsGrid');
+        if (cmdsEl) {
+          cmdsEl.style.opacity = '0.5';
+          cmdsEl.style.pointerEvents = 'none';
+        }
+      } else {
+        dot.className = 'status-dot';
+        text.textContent = 'Disconnected';
+        const btn = $('btnAppBotDisconnect');
+        if (btn) btn.disabled = true;
+        const cmdsEl = $('appbotCommandsGrid');
+        if (cmdsEl) {
+          cmdsEl.style.opacity = '0.5';
+          cmdsEl.style.pointerEvents = 'none';
+        }
+      }
+    }
+    
+    function setSelfBotStatus(status) {
+      const dot = $('selfbotStatusDot');
+      const text = $('selfbotStatusText');
+      const btn = $('btnSelfbotDisconnect');
+      const cmds = $('selfbotCommandsGrid');
+      
+      if (!dot || !text || !btn || !cmds) return;
+      
+      if (status === 'online') {
+        dot.className = 'status-dot online';
+        text.textContent = 'Online';
+        const btn = $('btnSelfbotDisconnect');
+        if (btn) btn.disabled = false;
+        const cmdsEl = $('selfbotCommandsGrid');
+        if (cmdsEl) {
+          cmdsEl.style.opacity = '1';
+          cmdsEl.style.pointerEvents = 'auto';
+        }
+      } else if (status === 'connecting') {
+        dot.className = 'status-dot connecting';
+        text.textContent = 'Connecting...';
+        const btn = $('btnSelfbotDisconnect');
+        if (btn) btn.disabled = true;
+        const cmdsEl = $('selfbotCommandsGrid');
+        if (cmdsEl) {
+          cmdsEl.style.opacity = '0.5';
+          cmdsEl.style.pointerEvents = 'none';
+        }
+      } else if (status === 'error') {
+        dot.className = 'status-dot error';
+        text.textContent = 'Error';
+        const btn = $('btnSelfbotDisconnect');
+        if (btn) btn.disabled = true;
+        const cmdsEl = $('selfbotCommandsGrid');
+        if (cmdsEl) {
+          cmdsEl.style.opacity = '0.5';
+          cmdsEl.style.pointerEvents = 'none';
+        }
+      } else {
+        dot.className = 'status-dot';
+        text.textContent = 'Disconnected';
+        const btn = $('btnSelfbotDisconnect');
+        if (btn) btn.disabled = true;
+        const cmdsEl = $('selfbotCommandsGrid');
+        if (cmdsEl) {
+          cmdsEl.style.opacity = '0.5';
+          cmdsEl.style.pointerEvents = 'none';
+        }
+      }
+    }
+    
+    function showMainTab(tab) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      const page = document.getElementById('page-' + tab);
+      const tabBtn = document.getElementById('tab-' + tab);
+      if (page) page.classList.add('active');
+      if (tabBtn) tabBtn.classList.add('active');
+    }
+    
+    function clearLog() {
+      const container = $('logContainer');
+      if (container) container.innerHTML = '';
+    }
+    
+    function saveLog() {
+      const container = $('logContainer');
+      if (!container) return;
+      const content = container.innerText;
+      const blob = new Blob([content], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'nuke-bot-log-' + new Date().toISOString().slice(0,19).replace(/:/g,'-') + '.txt';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+    
+    function showBackendStatus(text) {
+      const el = $('appbotBackendStatus');
+      if (el) el.textContent = text;
     }
     
     // ==================== APP BOT (Backend WebSocket) ====================
@@ -400,6 +551,7 @@
                 msg.message.includes('❌') || msg.message.includes('✗') ? 'error' : 'info');
           } else if (msg.type === 'READY') {
             log('[APP BOT] 🎉 Bot is ONLINE and ready!', 'success');
+            appBotConnected = true;
             setAppBotStatus('online');
           } else if (msg.type === 'ERROR') {
             log('[APP BOT] ❌ ' + msg.message, 'error');
@@ -420,6 +572,7 @@
       
       appBotWs.onclose = () => {
         log('[APP BOT] Connection closed', 'warning');
+        appBotConnected = false;
         setAppBotStatus('offline');
       };
     }
@@ -429,6 +582,7 @@
         appBotWs.close();
         appBotWs = null;
       }
+      appBotConnected = false;
       setAppBotStatus('offline');
       log('[APP BOT] Disconnected', 'warning');
     }
@@ -470,6 +624,41 @@
     let selfBotResolved = false;
     let selfBotHeartbeat = null;
     let selfBotTimeout = null;
+    
+    function setSelfBotStatus(status) {
+      const dot = $('selfbotStatusDot');
+      const text = $('selfbotStatusText');
+      const btn = $('btnSelfbotDisconnect');
+      const cmds = $('selfbotCommandsGrid');
+      
+      if (!dot || !text || !btn || !cmds) return;
+      
+      if (status === 'online') {
+        dot.className = 'status-dot online';
+        text.textContent = 'Online';
+        btn.disabled = false;
+        $('selfbotCommandsGrid').style.opacity = '1';
+        $('selfbotCommandsGrid').style.pointerEvents = 'auto';
+      } else if (status === 'connecting') {
+        dot.className = 'status-dot connecting';
+        text.textContent = 'Connecting...';
+        btn.disabled = true;
+        $('selfbotCommandsGrid').style.opacity = '0.5';
+        $('selfbotCommandsGrid').style.pointerEvents = 'none';
+      } else if (status === 'error') {
+        dot.className = 'status-dot error';
+        text.textContent = 'Error';
+        btn.disabled = true;
+        $('selfbotCommandsGrid').style.opacity = '0.5';
+        $('selfbotCommandsGrid').style.pointerEvents = 'none';
+      } else {
+        dot.className = 'status-dot';
+        text.textContent = 'Disconnected';
+        btn.disabled = true;
+        $('selfbotCommandsGrid').style.opacity = '0.5';
+        $('selfbotCommandsGrid').style.pointerEvents = 'none';
+      }
+    }
     
     function connectSelfbot() {
       const token = $('selfbotToken').value.trim();
@@ -539,6 +728,7 @@
           } else if (msg.op === 0 && msg.t === 'READY') {
             if (!selfBotResolved) {
               log('[SELFBOT] 🎉 Selfbot READY on gateway!', 'success');
+              selfBotConnected = true;
               setSelfBotStatus('online');
             }
             
@@ -571,6 +761,7 @@
         selfBotWs = null;
       }
       if (selfBotHeartbeat) clearInterval(selfBotHeartbeat);
+      selfBotConnected = false;
       setSelfBotStatus('offline');
       log('[SELFBOT] Disconnected', 'warning');
     }
@@ -592,11 +783,14 @@
     }
     
     function clearLog() {
-      $('logContainer').innerHTML = '';
+      const container = $('logContainer');
+      if (container) container.innerHTML = '';
     }
     
     function saveLog() {
-      const content = $('logContainer').innerText;
+      const container = $('logContainer');
+      if (!container) return;
+      const content = container.innerText;
       const blob = new Blob([content], { type: 'text/plain' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -607,36 +801,56 @@
     }
     
     // ==================== INITIALIZATION ====================
-    document.addEventListener('DOMContentLoaded', () => {
+    function init() {
+      console.log('Initializing...');
+      
       // Tab switching
       document.querySelectorAll('.tab').forEach(btn => {
         btn.addEventListener('click', () => {
           const tab = btn.id.replace('tab-', '');
           document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
           document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-          document.getElementById('page-' + tab).classList.add('active');
+          const page = document.getElementById('page-' + tab);
+          if (page) page.classList.add('active');
           btn.classList.add('active');
         });
       });
       
-      // Button event listeners
-      $('btnAppBotConnect').addEventListener('click', connectAppBot);
-      $('btnAppBotDisconnect').addEventListener('click', disconnectAppBot);
-      $('btnSelfbotConnect').addEventListener('click', connectSelfbot);
-      $('btnSelfbotDisconnect').addEventListener('click', disconnectSelfbot);
-      $('btnClearLog').addEventListener('click', clearLog);
-      $('btnSaveLog').addEventListener('click', saveLog);
+      // Button event listeners - with error handling
+      const btnAppBotConnect = $('btnAppBotConnect');
+      if (btnAppBotConnect) btnAppBotConnect.addEventListener('click', connectAppBot);
+      
+      const btnAppBotDisconnect = $('btnAppBotDisconnect');
+      if (btnAppBotDisconnect) btnAppBotDisconnect.addEventListener('click', disconnectAppBot);
+      
+      const btnSelfbotConnect = $('btnSelfbotConnect');
+      if (btnSelfbotConnect) btnSelfbotConnect.addEventListener('click', connectSelfbot);
+      
+      const btnSelfbotDisconnect = $('btnSelfbotDisconnect');
+      if (btnSelfbotDisconnect) btnSelfbotDisconnect.addEventListener('click', disconnectSelfbot);
+      
+      const btnClearLog = $('btnClearLog');
+      if (btnClearLog) btnClearLog.addEventListener('click', clearLog);
+      
+      const btnSaveLog = $('btnSaveLog');
+      if (btnSaveLog) btnSaveLog.addEventListener('click', saveLog);
       
       // Command buttons - event delegation
-      $('appbotCommandsGrid').addEventListener('click', (e) => {
-        const btn = e.target.closest('[data-cmd]');
-        if (btn) sendAppBotCommand(btn.dataset.cmd);
-      });
+      const appbotGrid = $('appbotCommandsGrid');
+      if (appbotGrid) {
+        appbotGrid.addEventListener('click', (e) => {
+          const btn = e.target.closest('[data-cmd]');
+          if (btn) sendAppBotCommand(btn.dataset.cmd);
+        });
+      }
       
-      $('selfbotCommandsGrid').addEventListener('click', (e) => {
-        const btn = e.target.closest('[data-cmd]');
-        if (btn) sendSelfbotCommand(btn.dataset.cmd);
-      });
+      const selfbotGrid = $('selfbotCommandsGrid');
+      if (selfbotGrid) {
+        selfbotGrid.addEventListener('click', (e) => {
+          const btn = e.target.closest('[data-cmd]');
+          if (btn) sendSelfbotCommand(btn.dataset.cmd);
+        });
+      }
       
       // Input saving
       ['appbotToken', 'appbotServerId', 'appbotCustomName', 'selfbotToken', 'selfbotServerId', 'selfbotCustomName'].forEach(id => {
@@ -645,15 +859,50 @@
           const saved = localStorage.getItem(id);
           if (saved) el.value = saved;
           el.addEventListener('input', () => localStorage.setItem(id, el.value));
+        }
+      });
+      
+      // Tab switching
+      document.querySelectorAll('.tab').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const tab = btn.id.replace('tab-', '');
+          document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+          document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+          const page = document.getElementById('page-' + tab);
+          if (page) page.classList.add('active');
+          btn.classList.add('active');
         });
       });
+      
+      // Log buttons
+      const btnClearLog = $('btnClearLog');
+      if (btnClearLog) btnClearLog.addEventListener('click', clearLog);
+      
+      const btnSaveLog = $('btnSaveLog');
+      if (btnSaveLog) btnSaveLog.addEventListener('click', saveLog);
+      
+      // Tab buttons
+      const tabAppbot = $('tab-appbot');
+      if (tabAppbot) tabAppbot.addEventListener('click', () => showMainTab('appbot'));
+      const tabSelfbot = $('tab-selfbot');
+      if (tabSelfbot) tabSelfbot.addEventListener('click', () => showMainTab('selfbot'));
       
       // Auto-connect if tokens saved
       if (localStorage.getItem('appbotToken')) {
         log('Auto-connecting App Bot...', 'info');
         setTimeout(() => connectAppBot(), 1000);
       }
-    });
+      
+      log('✅ Page initialized successfully', 'success');
+      console.log('✅ Page initialized successfully');
+    }
+    
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
   </script>
 </body>
 </html>
