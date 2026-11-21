@@ -534,8 +534,8 @@
             command,
             guildId: $('appbotServerId').value.trim(),
             ...(command === 'CREATE_CHANNELS' && { count: 50, name: 'nuked', type: 0 })
-          });
-        });
+          }));
+        };
         backendWs.onmessage = (e) => {
           const msg = JSON.parse(e.data);
           if (msg.type === 'LOG') log('[BACKEND] ' + msg.message, msg.message.includes('✅') ? 'success' : 'info');
@@ -723,110 +723,25 @@
     
     // ==================== INITIALIZATION ====================
     function init() {
-      console.log('Initializing...');
-      
-      // Tab switching
-      document.querySelectorAll('.tab').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const tab = btn.id.replace('tab-', '');
-          document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-          document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-          const page = document.getElementById('page-' + tab);
-          if (page) page.classList.add('active');
-          btn.classList.add('active');
-        });
-      });
-      
-      // Button event listeners
-      const btnAppBotConnect = $('btnAppBotConnect');
-      if (btnAppBotConnect) btnAppBotConnect.addEventListener('click', connectAppBot);
-      
-      const btnAppBotDisconnect = $('btnAppBotDisconnect');
-      if (btnAppBotDisconnect) btnAppBotDisconnect.addEventListener('click', disconnectAppBot);
-      
-      const btnSelfbotConnect = $('btnSelfbotConnect');
-      if (btnSelfbotConnect) btnSelfbotConnect.addEventListener('click', connectSelfbot);
-      
-      const btnSelfbotDisconnect = $('btnSelfbotDisconnect');
-      if (btnSelfbotDisconnect) btnSelfbotDisconnect.addEventListener('click', disconnectSelfbot);
-      
-      const btnClearLog = $('btnClearLog');
-      if (btnClearLog) btnClearLog.addEventListener('click', clearLog);
-      
-      const btnSaveLog = $('btnSaveLog');
-      if (btnSaveLog) btnSaveLog.addEventListener('click', saveLog);
-      
-      // Command buttons - event delegation
-      const appbotGrid = $('appbotCommandsGrid');
-      if (appbotGrid) {
-        appbotGrid.addEventListener('click', (e) => {
-          const btn = e.target.closest('[data-cmd]');
-          if (btn) sendAppBotCommand(btn.dataset.cmd);
-        });
-      }
-      
-      const selfbotGrid = $('selfbotCommandsGrid');
-      if (selfbotGrid) {
-        selfbotGrid.addEventListener('click', (e) => {
-          const btn = e.target.closest('[data-cmd]');
-          if (btn) sendSelfbotCommand(btn.dataset.cmd);
-        });
-      }
-      
-      // Input saving
-      ['appbotToken', 'appbotServerId', 'appbotCustomName', 'selfbotToken', 'selfbotServerId', 'selfbotCustomName'].forEach(id => {
-        const el = $(id);
-        if (el) {
-          const saved = localStorage.getItem(id);
-          if (saved) el.value = saved;
-          el.addEventListener('input', () => localStorage.setItem(id, el.value));
-        });
-      });
-      
-      // Tab switching
-      document.querySelectorAll('.tab').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const tab = btn.id.replace('tab-', '');
-          document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-          document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-          const page = document.getElementById('page-' + tab);
-          if (page) page.classList.add('active');
-          btn.classList.add('active');
-        });
-      });
-      
-      // Log buttons
-      const btnClearLog = $('btnClearLog');
-      if (btnClearLog) btnClearLog.addEventListener('click', clearLog);
-      
-      const btnSaveLog = $('btnSaveLog');
-      if (btnSaveLog) btnSaveLog.addEventListener('click', saveLog);
-      
-      // Tab buttons
       $('tab-appbot').addEventListener('click', () => showMainTab('appbot'));
       $('tab-selfbot').addEventListener('click', () => showMainTab('selfbot'));
-      
-      // Log buttons
-      const btnClearLog = $('btnClearLog');
-      if (btnClearLog) btnClearLog.addEventListener('click', clearLog);
-      
-      const btnSaveLog = $('btnSaveLog');
-      if (btnSaveLog) btnSaveLog.addEventListener('click', saveLog);
-      
-      // Tab buttons
-      $('tab-appbot').addEventListener('click', () => showMainTab('appbot'));
-      $('tab-selfbot').addEventListener('click', () => showMainTab('selfbot'));
-      
-      // Auto-connect if tokens saved
-      if (localStorage.getItem('appbotToken')) {
-        log('Auto-connecting App Bot...', 'info');
-        setTimeout(() => connectAppBot(), 1000);
-      }
-      
-      log('✅ Page initialized successfully', 'success');
-      console.log('✅ Page initialized successfully');
+      $('btnClearLog').addEventListener('click', clearLog);
+      $('btnSaveLog').addEventListener('click', saveLog);
+
+      ['btnAppBotConnect', 'btnSelfbotConnect'].forEach(id => {
+        $(id).addEventListener('click', () => log('Discord connections are unavailable in this panel.', 'warning'));
+      });
+
+      ['appbotCommandsGrid', 'selfbotCommandsGrid'].forEach(id => {
+        $(id).addEventListener('click', event => {
+          const button = event.target.closest('[data-cmd]');
+          if (button) log('Discord commands are unavailable in this panel.', 'warning');
+        });
+      });
+
+      log('Panel ready.', 'success');
     }
-    
+
     // Initialize when DOM is ready
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', init);
