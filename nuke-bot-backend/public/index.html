@@ -90,6 +90,17 @@
     .modal-actions { display: flex; gap: 8px; margin-top: 20px; }
 
     .header-dp { display: block; width: 72px; height: 72px; border-radius: 50%; object-fit: cover; border: 2px solid #00ff88; box-shadow: 0 0 18px rgba(0,255,136,0.45); margin: 0 auto 12px; }
+
+    .cmd-btn-grid.glow .cmd-btn {
+      border-color: #00ff88;
+      background: #0d1a12;
+      animation: cmdGlow 1.8s ease-in-out infinite;
+    }
+    .cmd-btn-grid.glow .cmd-btn:hover { background: #12261a; box-shadow: 0 0 22px rgba(0,255,136,0.7); }
+    @keyframes cmdGlow {
+      0%, 100% { box-shadow: 0 0 6px rgba(0,255,136,0.25); }
+      50% { box-shadow: 0 0 20px rgba(0,255,136,0.65); }
+    }
     
     @keyframes pulse { 0%,100% { opacity: 0.6; transform: scale(1); } 50% { opacity: 1; transform: scale(1.2); } }
     @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
@@ -302,76 +313,6 @@
       console.log('[' + type.toUpperCase() + ']', message);
     }
     
-    function setAppBotStatus(status) {
-      const dot = $('appbotStatusDot');
-      const text = $('appbotStatusText');
-      const btn = $('btnAppBotDisconnect');
-      const cmds = $('appbotCommandsGrid');
-      
-      if (!dot || !text || !btn || !cmds) return;
-      
-      if (status === 'online') {
-        dot.className = 'status-dot online';
-        text.textContent = 'Online';
-        $('btnAppBotDisconnect').disabled = false;
-        $('appbotCommandsGrid').style.opacity = '1';
-        $('appbotCommandsGrid').style.pointerEvents = 'auto';
-      } else if (status === 'connecting') {
-        dot.className = 'status-dot connecting';
-        $('appbotStatusText').textContent = 'Connecting...';
-        $('btnAppBotDisconnect').disabled = true;
-        $('appbotCommandsGrid').style.opacity = '0.5';
-        $('appbotCommandsGrid').style.pointerEvents = 'none';
-      } else if (status === 'error') {
-        dot.className = 'status-dot error';
-        $('appbotStatusText').textContent = 'Error';
-        $('btnAppBotDisconnect').disabled = true;
-        $('appbotCommandsGrid').style.opacity = '0.5';
-        $('appbotCommandsGrid').style.pointerEvents = 'none';
-      } else {
-        dot.className = 'status-dot';
-        $('appbotStatusText').textContent = 'Disconnected';
-        $('btnAppBotDisconnect').disabled = true;
-        $('appbotCommandsGrid').style.opacity = '0.5';
-        $('appbotCommandsGrid').style.pointerEvents = 'none';
-      }
-    }
-    
-    function setSelfBotStatus(status) {
-      const dot = $('selfbotStatusDot');
-      const text = $('selfbotStatusText');
-      const btn = $('btnSelfbotDisconnect');
-      const cmds = $('selfbotCommandsGrid');
-      
-      if (!dot || !text || !btn || !cmds) return;
-      
-      if (status === 'online') {
-        dot.className = 'status-dot online';
-        $('selfbotStatusText').textContent = 'Online';
-        $('btnSelfbotDisconnect').disabled = false;
-        $('selfbotCommandsGrid').style.opacity = '1';
-        $('selfbotCommandsGrid').style.pointerEvents = 'auto';
-      } else if (status === 'connecting') {
-        dot.className = 'status-dot connecting';
-        $('selfbotStatusText').textContent = 'Connecting...';
-        $('btnSelfbotDisconnect').disabled = true;
-        $('selfbotCommandsGrid').style.opacity = '0.5';
-        $('selfbotCommandsGrid').style.pointerEvents = 'none';
-      } else if (status === 'error') {
-        dot.className = 'status-dot error';
-        $('selfbotStatusText').textContent = 'Error';
-        $('btnSelfbotDisconnect').disabled = true;
-        $('selfbotCommandsGrid').style.opacity = '0.5';
-        $('selfbotCommandsGrid').style.pointerEvents = 'none';
-      } else {
-        dot.className = 'status-dot';
-        $('selfbotStatusText').textContent = 'Disconnected';
-        $('btnSelfbotDisconnect').disabled = true;
-        $('selfbotCommandsGrid').style.opacity = '0.5';
-        $('selfbotCommandsGrid').style.pointerEvents = 'none';
-      }
-    }
-    
     function showMainTab(tab) {
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -408,6 +349,7 @@
       const cmds = $('appbotCommandsGrid');
       
       if (!dot || !text || !btn || !cmds) return;
+      cmds.classList.remove('glow');
       
       if (status === 'online') {
         dot.className = 'status-dot online';
@@ -415,6 +357,7 @@
         $('btnAppBotDisconnect').disabled = false;
         $('appbotCommandsGrid').style.opacity = '1';
         $('appbotCommandsGrid').style.pointerEvents = 'auto';
+        cmds.classList.add('glow');
       } else if (status === 'connecting') {
         dot.className = 'status-dot connecting';
         $('appbotStatusText').textContent = 'Connecting...';
@@ -688,6 +631,7 @@
       const cmds = $('selfbotCommandsGrid');
       
       if (!dot || !text || !btn || !cmds) return;
+      cmds.classList.remove('glow');
       
       if (status === 'online') {
         dot.className = 'status-dot online';
@@ -695,6 +639,7 @@
         $('btnSelfbotDisconnect').disabled = false;
         $('selfbotCommandsGrid').style.opacity = '1';
         $('selfbotCommandsGrid').style.pointerEvents = 'auto';
+        cmds.classList.add('glow');
       } else if (status === 'connecting') {
         dot.className = 'status-dot connecting';
         $('selfbotStatusText').textContent = 'Connecting...';

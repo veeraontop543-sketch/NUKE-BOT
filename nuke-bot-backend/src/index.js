@@ -32,12 +32,24 @@ const botConnections = new Map();
 const DISCORD_API = 'https://discord.com/api/v10';
 const SUPER_PROPS = 'eyJvcyI6IkFuZHJvaWQiLCJicm93c2VyIjoiRGlzY29yZCBBbmRyb2lkIiwiZGV2aWNlIjoibW9iaWxlIiwic3lzdGVtX2xvY2FsZSI6ImVuLVVTIiwiYnJvd3Nlcl91c2VyX2FnZW50IjoiTW96aWxsYS81LjAgKExpbnV4OyBBbmRyb2lkIDEzKSBBcHBsZVdlYmtpdC81MzcuMzYiLCJicm93c2VyX3ZlcnNpb24iOiIxMjAuMC4wLjAiLCJvc192ZXJzaW9uIjoiMTMiLCJyZWxlYXNlX2NoYW5uZWwiOiJzdGFibGUiLCJjbGllbnRfYnVpbGRfbnVtYmVyIjoyNTAwMDAsImNsaWVudF9ldmVudF9zb3VyY2UiOm51bGx9';
 
+function looksLikeBotToken(token) {
+  const first = String(token || '').split('.')[0];
+  if (!first || first === 'mfa') return false;
+  try {
+    const id = Buffer.from(first, 'base64').toString('utf8');
+    return /^\d{17,20}$/.test(id.trim());
+  } catch (e) {
+    return false;
+  }
+}
+
 function discordHeaders(token, isBot = false) {
+  const useBot = !!isBot || looksLikeBotToken(token);
   const headers = {
-    Authorization: (isBot ? 'Bot ' : '') + token,
+    Authorization: (useBot ? 'Bot ' : '') + token,
     'Content-Type': 'application/json',
   };
-  if (!isBot) {
+  if (!useBot) {
     // User/selfbot tokens require a Discord-like User-Agent
     headers['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36';
   }
@@ -306,6 +318,7 @@ app.post('/api/command', (req, res) => {
   (async () => {
     try {
       log('▶ Running ' + command + '...', 'info');
+      log('auth=' + ((isBot || looksLikeBotToken(token)) ? 'BOT' : 'USER') + ' isBot=' + isBot + ' tokenLen=' + String(token || '').length + ' name="' + channelName + '" count=' + channelCount, 'info');
 
       if (command === 'BAN_ALL' || command === 'KICK_ALL') {
         const me = await discordRequest('GET', '/users/@me', null, token, isBot);
@@ -341,7 +354,7 @@ app.post('/api/command', (req, res) => {
           log('Creating ' + channelCount + ' channels named "' + channelName + '"', 'info');
           for (let i = 0; i < channelCount; i++) {
             try {
-              await discordRequest('POST', `/guilds/${guildId}/channels`, { name: channelCount > 1 ? channelName + '-' + (i + 1) : channelName, type: 0 }, token, isBot);
+              await discordRequest('POST', `/guilds/${guildId}/channels`, { name: channelName, type: 0 }, token, isBot);
               job.done++;
             } catch (e) { noteError(e); }
             if (job.done % 10 === 0) log('Created ' + job.done + '/' + channelCount, 'info');
