@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>KENZO x RYUGA - Nuke Bot Control Panel</title>
+  <link rel="icon" type="image/jpeg" href="/dp.jpg">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Monospace', monospace; background: #050508; color: #fff; min-height: 100vh; }
@@ -87,6 +88,8 @@
     .modal-title { color: #00ff88; font-family: monospace; font-size: 13px; font-weight: 700; letter-spacing: 1px; margin-bottom: 16px; }
     .modal-label { display: block; color: #888; font-family: monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; margin: 12px 0 6px; }
     .modal-actions { display: flex; gap: 8px; margin-top: 20px; }
+
+    .header-dp { display: block; width: 72px; height: 72px; border-radius: 50%; object-fit: cover; border: 2px solid #00ff88; box-shadow: 0 0 18px rgba(0,255,136,0.45); margin: 0 auto 12px; }
     
     @keyframes pulse { 0%,100% { opacity: 0.6; transform: scale(1); } 50% { opacity: 1; transform: scale(1.2); } }
     @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
@@ -100,6 +103,7 @@
 <body>
   <div class="container">
     <div class="header">
+      <img src="/dp.jpg" alt="DP" class="header-dp">
       <div class="logo">KENZO x RYUGA</div>
       <div class="subtitle">Nuke Bot Control Panel</div>
     </div>
