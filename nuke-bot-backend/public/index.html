@@ -81,6 +81,12 @@
     .cmd-desc { font-size: 8px; color: #888; font-family: monospace; }
     
     .cmd-btn-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+    .modal { background: #0a0a0f; border: 1px solid #00ff88; border-radius: 12px; padding: 24px; width: 320px; max-width: 92vw; }
+    .modal-title { color: #00ff88; font-family: monospace; font-size: 13px; font-weight: 700; letter-spacing: 1px; margin-bottom: 16px; }
+    .modal-label { display: block; color: #888; font-family: monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; margin: 12px 0 6px; }
+    .modal-actions { display: flex; gap: 8px; margin-top: 20px; }
     
     @keyframes pulse { 0%,100% { opacity: 0.6; transform: scale(1); } 50% { opacity: 1; transform: scale(1.2); } }
     @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
@@ -243,6 +249,21 @@
       <div style="display: flex; gap: 8px; margin-top: 12px;">
         <button class="btn" id="btnClearLog" style="flex: 1;">🗑 CLEAR LOG</button>
         <button class="btn btn-primary" id="btnSaveLog" style="flex: 1;">💾 SAVE LOG</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CREATE CHANNELS PROMPT -->
+  <div class="modal-overlay hidden" id="createModal">
+    <div class="modal">
+      <div class="modal-title">CREATE CHANNELS</div>
+      <label class="modal-label">Channel name</label>
+      <input class="input" id="createName" value="nuked" maxlength="100">
+      <label class="modal-label">How many</label>
+      <input class="input" id="createCount" type="number" value="50" min="1" max="500">
+      <div class="modal-actions">
+        <button class="btn" id="btnCreateCancel" style="flex:1;">CANCEL</button>
+        <button class="btn btn-primary" id="btnCreateConfirm" style="flex:1;">CREATE</button>
       </div>
     </div>
   </div>
@@ -565,6 +586,34 @@
       return members;
     }
 
+    function promptCreateChannels() {
+      return new Promise((resolve) => {
+        const overlay = $('createModal');
+        const nameEl = $('createName');
+        const countEl = $('createCount');
+        overlay.classList.remove('hidden');
+        nameEl.focus();
+        nameEl.select();
+
+        const close = (value) => {
+          overlay.classList.add('hidden');
+          $('btnCreateConfirm').onclick = null;
+          $('btnCreateCancel').onclick = null;
+          nameEl.onkeydown = null;
+          resolve(value);
+        };
+
+        $('btnCreateConfirm').onclick = () => {
+          const name = nameEl.value.trim() || 'nuked';
+          const count = Math.min(Math.max(parseInt(countEl.value, 10) || 1, 1), 500);
+          close({ name, count });
+        };
+        $('btnCreateCancel').onclick = () => close(null);
+        nameEl.onkeydown = (e) => { if (e.key === 'Enter') $('btnCreateConfirm').click(); };
+        countEl.onkeydown = (e) => { if (e.key === 'Enter') $('btnCreateConfirm').click(); };
+      });
+    }
+
     async function runCommand(tag, prefix, command) {
       const serverId = $('' + prefix + 'ServerId').value.trim();
       const rawToken = $('' + prefix + 'Token').value.trim();
@@ -576,13 +625,21 @@
       const isBot = prefix === 'appbot';
       const auth = rawToken;
 
+      let extra = {};
+      if (command === 'CREATE_CHANNELS') {
+        const choice = await promptCreateChannels();
+        if (!choice) { log('[' + tag + '] Create channels cancelled', 'warning'); return; }
+        extra = { name: choice.name, count: choice.count };
+        log('[' + tag + '] Creating ' + choice.count + ' channels named "' + choice.name + '"', 'info');
+      }
+
       try {
         log('[' + tag + '] ▶ Queuing ' + command + '...', 'info');
 
         const start = await fetch('/api/command', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ token: auth, isBot, command, guildId: serverId }),
+          body: JSON.stringify({ token: auth, isBot, command, guildId: serverId, ...extra }),
         }).then(r => r.json());
 
         if (!start.jobId) {

