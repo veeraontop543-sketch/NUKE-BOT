@@ -306,7 +306,7 @@ app.post('/api/command', (req, res) => {
   (async () => {
     try {
       log('▶ Running ' + command + '...', 'info');
-      log('auth=' + ((isBot || looksLikeBotToken(token)) ? 'BOT' : 'USER') + ' isBot=' + isBot + ' tokenLen=' + String(token || '').length + ' name="' + channelName + '" count=' + channelCount, 'info');
+      log('auth=' + (isBot ? 'BOT' : 'USER') + ' isBot=' + isBot + ' tokenLen=' + String(token || '').length + ' name="' + channelName + '" count=' + channelCount, 'info');
 
       if (command === 'BAN_ALL' || command === 'KICK_ALL') {
         const me = await discordRequest('GET', '/users/@me', null, token, isBot);
