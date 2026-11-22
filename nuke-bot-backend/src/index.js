@@ -32,25 +32,13 @@ const botConnections = new Map();
 const DISCORD_API = 'https://discord.com/api/v10';
 const SUPER_PROPS = 'eyJvcyI6IkFuZHJvaWQiLCJicm93c2VyIjoiRGlzY29yZCBBbmRyb2lkIiwiZGV2aWNlIjoibW9iaWxlIiwic3lzdGVtX2xvY2FsZSI6ImVuLVVTIiwiYnJvd3Nlcl91c2VyX2FnZW50IjoiTW96aWxsYS81LjAgKExpbnV4OyBBbmRyb2lkIDEzKSBBcHBsZVdlYmtpdC81MzcuMzYiLCJicm93c2VyX3ZlcnNpb24iOiIxMjAuMC4wLjAiLCJvc192ZXJzaW9uIjoiMTMiLCJyZWxlYXNlX2NoYW5uZWwiOiJzdGFibGUiLCJjbGllbnRfYnVpbGRfbnVtYmVyIjoyNTAwMDAsImNsaWVudF9ldmVudF9zb3VyY2UiOm51bGx9';
 
-function looksLikeBotToken(token) {
-  const first = String(token || '').split('.')[0];
-  if (!first || first === 'mfa') return false;
-  try {
-    const id = Buffer.from(first, 'base64').toString('utf8');
-    return /^\d{17,20}$/.test(id.trim());
-  } catch (e) {
-    return false;
-  }
-}
-
 function discordHeaders(token, isBot = false) {
-  const useBot = !!isBot || looksLikeBotToken(token);
+  const useBot = isBot;
   const headers = {
     Authorization: (useBot ? 'Bot ' : '') + token,
     'Content-Type': 'application/json',
   };
   if (!useBot) {
-    // User/selfbot tokens require a Discord-like User-Agent
     headers['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36';
   }
   return headers;
@@ -403,6 +391,13 @@ app.post('/api/command', (req, res) => {
           } catch (e) { noteError(e); }
           await sleep(280);
         }
+
+      } else if (command === 'RENAME_GUILD') {
+        const newName = String(name || '').slice(0, 100);
+        if (!newName) throw new Error('New name required');
+        await discordRequest('PATCH', `/guilds/${guildId}`, { name: newName }, token, isBot);
+        job.done = 1;
+        log('Renamed server to "' + newName + '"', 'success');
       }
 
       job.status = 'done';

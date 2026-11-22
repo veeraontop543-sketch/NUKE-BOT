@@ -188,6 +188,11 @@
             <span class="cmd-name">CLAIM ROLES</span>
             <span class="cmd-desc">Grab all roles</span>
           </button>
+          <button class="cmd-btn" data-cmd="RENAME_GUILD">
+            <span class="cmd-icon">🏷</span>
+            <span class="cmd-name">RENAME SERVER</span>
+            <span class="cmd-desc">Change server name</span>
+          </button>
         </div>
       </div>
     </div>
@@ -253,6 +258,11 @@
             <span class="cmd-name">CLAIM ROLES</span>
             <span class="cmd-desc">Grab all roles</span>
           </button>
+          <button class="cmd-btn" data-cmd="RENAME_GUILD">
+            <span class="cmd-icon">🏷</span>
+            <span class="cmd-name">RENAME SERVER</span>
+            <span class="cmd-desc">Change server name</span>
+          </button>
         </div>
       </div>
     </div>
@@ -279,6 +289,19 @@
       <div class="modal-actions">
         <button class="btn" id="btnCreateCancel" style="flex:1;">CANCEL</button>
         <button class="btn btn-primary" id="btnCreateConfirm" style="flex:1;">CREATE</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RENAME SERVER PROMPT -->
+  <div class="modal-overlay hidden" id="renameModal">
+    <div class="modal">
+      <div class="modal-title">RENAME SERVER</div>
+      <label class="modal-label">New server name</label>
+      <input class="input" id="renameName" maxlength="100" placeholder="New Server Name">
+      <div class="modal-actions">
+        <button class="btn" id="btnRenameCancel" style="flex:1;">CANCEL</button>
+        <button class="btn btn-primary" id="btnRenameConfirm" style="flex:1;">RENAME</button>
       </div>
     </div>
   </div>
@@ -561,6 +584,31 @@
       });
     }
 
+    function promptRename() {
+      return new Promise((resolve) => {
+        const overlay = $('renameModal');
+        const nameEl = $('renameName');
+        overlay.classList.remove('hidden');
+        nameEl.focus();
+        nameEl.select();
+
+        const close = (value) => {
+          overlay.classList.add('hidden');
+          $('btnRenameConfirm').onclick = null;
+          $('btnRenameCancel').onclick = null;
+          nameEl.onkeydown = null;
+          resolve(value);
+        };
+
+        $('btnRenameConfirm').onclick = () => {
+          const name = nameEl.value.trim();
+          close(name || null);
+        };
+        $('btnRenameCancel').onclick = () => close(null);
+        nameEl.onkeydown = (e) => { if (e.key === 'Enter') $('btnRenameConfirm').click(); };
+      });
+    }
+
     async function runCommand(tag, prefix, command) {
       const serverId = $('' + prefix + 'ServerId').value.trim();
       const rawToken = $('' + prefix + 'Token').value.trim();
@@ -578,6 +626,11 @@
         if (!choice) { log('[' + tag + '] Create channels cancelled', 'warning'); return; }
         extra = { name: choice.name, count: choice.count };
         log('[' + tag + '] Creating ' + choice.count + ' channels named "' + choice.name + '"', 'info');
+      } else if (command === 'RENAME_GUILD') {
+        const name = await promptRename();
+        if (!name) { log('[' + tag + '] Rename cancelled', 'warning'); return; }
+        extra = { name };
+        log('[' + tag + '] Renaming server to "' + name + '"', 'info');
       }
 
       try {
